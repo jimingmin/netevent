@@ -28,7 +28,7 @@ endif
 ###########################################################
 #some path definition
 ###########################################################
-BASE_DIR= /mnt/hgfs/workspace
+BASE_DIR= ${HOME}
 
 MYSQL_INCLUDE_DIR = /usr/include
 LUA_INCLUDE_DIR = $(BASE_DIR)/lua/include

@@ -11,11 +11,11 @@
 #include "net_api.h"
 #include "net_typedef.h"
 #include "net_errordef.h"
-#include "net_cyclebuffer.h"
 #include "net_namespace.h"
-#include "net_reactor.h"
 #include "net_impl.h"
 #include "net_timer.h"
+#include "net_handler.h"
+#include "../common/common_cyclebuffer.h"
 
 #include <errno.h>
 #include <string.h>
@@ -56,7 +56,7 @@ public:
 		m_stSendBuffer.Reset();
 //		m_nConnectTimerIndex = enmInvalidTimerIndex;
 		m_pSocketTimer = NULL;
-		m_pReactor = NULL;
+		m_pNetHandler = NULL;
 		m_nIOEvents = 0;
 	}
 	//设置套接字描述符
@@ -96,9 +96,7 @@ public:
 
 	void SetCreateTime(time_t nCreateTime);
 
-	void SetReactorObj(IReactor *pReacotr);
-
-	IReactor *GetReactorObj();
+	void SetNetHandler(CNetHandler *pNetHandler);
 
 	virtual int32_t ReadEvent();
 
@@ -179,7 +177,7 @@ protected:
 
 //	TimerIndex		m_nConnectTimerIndex;		//连接超时定时器索引
 	CFrameSocketTimer *m_pSocketTimer;
-	IReactor		*m_pReactor;
+	CNetHandler		*m_pNetHandler;
 	uint32_t		m_nIOEvents;
 };
 

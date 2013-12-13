@@ -8,33 +8,27 @@
 #ifndef NET_THREAD_H_
 #define NET_THREAD_H_
 
-#include "net_singleton.h"
 #include "net_namespace.h"
 #include "net_typedef.h"
 #include "net_errordef.h"
 #include "net_socket.h"
 #include "net_epoll.h"
+#include "../common/common_singleton.h"
 
 
 NETEVENT_NAMESPACE_BEGIN
 
-//enum enmSocketType
-//{
-//	enmSocketType_invalid = 0,
-//	enmSocketType_listen =	1,			//监听socket
-//	enmSocketType_common =  2,			//普通socket
-//};
 
 //最大的服务器类型个数
 //#define MAX_PEERTYPE_COUNT 64
 
 #define RECONNECT_TIME		10//(s)
 
-class CFrameNetThread
+class CNetHandler
 {
 public:
-	CFrameNetThread();
-	virtual ~CFrameNetThread();
+	CNetHandler();
+	virtual ~CNetHandler();
 
 	int32_t Initialize();
 
@@ -45,6 +39,12 @@ public:
 	bool Execute();
 
 	IReactor *GetReactor();
+
+	int32_t RegistEvent(CSocket *pSocket, uint32_t nEvents);
+
+	int32_t RemoveEvent(CSocket *pSocket, uint32_t nEvents);
+
+	int32_t DeleteEvent(CSocket *pSocket);
 
 protected:
 	int32_t MessagePump();
@@ -61,7 +61,7 @@ protected:
 };
 
 
-#define	g_FrameNetThread					CSingleton<CFrameNetThread>::GetInstance()
+#define	g_NetHandler					CSingleton<CNetHandler>::GetInstance()
 
 NETEVENT_NAMESPACE_END
 

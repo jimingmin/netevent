@@ -81,26 +81,5 @@ enum
 	enmMaxIPAddressLength				= 20,	//IP地址最大长度
 };
 
-/*********************************************************************
-* 时间日期相关常量定义
-*********************************************************************/
-#define US_PER_MS				((int64_t)1000)
-#define US_PER_SECOND			((int64_t)(1000 * US_PER_MS))
-#define US_PER_MINUTE			((int64_t)(60 * US_PER_SECOND))
-#define US_PER_HOUR				((int64_t)(60 * US_PER_MINUTE))
-#define US_PER_DAY				((int64_t)(24 * US_PER_HOUR))
-
-#define MS_PER_SECOND			1000
-#define SECOND_PER_MINUTE		60
-#define MINUTE_PER_HOUR			60
-#define HOUR_PER_DAY			24
-#define DAY_PER_YEAR			365
-
-#define SECOND_PER_HOUR			(MINUTE_PER_HOUR * SECOND_PER_MINUTE)
-#define SECOND_PER_DAY			(HOUR_PER_DAY * SECOND_PER_HOUR)
-#define SECOND_PER_WEEK			(SECOND_PER_DAY * 7)
-#define SECOND_PER_YEAR			(DAY_PER_YEAR * SECOND_PER_DAY)
-
-
 
 #endif /* NET_TYPEDEF_H_ */

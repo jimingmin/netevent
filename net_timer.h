@@ -9,7 +9,7 @@
 #define NET_TIMER_H_
 
 #include "net_namespace.h"
-#include "net_singleton.h"
+#include "../common/common_singleton.h"
 
 #include <list>
 
