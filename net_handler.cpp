@@ -6,13 +6,13 @@
  */
 
 #include "net_api.h"
-#include "net_datetime.h"
 #include "net_socket.h"
-#include "net_thread.h"
+#include "net_handler.h"
 #include "net_eventid.h"
 #include "net_timer.h"
 #include "net_select.h"
 #include "net_epoll.h"
+#include "../common/common_datetime.h"
 
 #ifndef WIN32
 #include<cstring>
@@ -21,19 +21,19 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-CFrameNetThread::CFrameNetThread()
+CNetHandler::CNetHandler()
 {
 	m_pReactor = NULL;
 	m_nReconnectTime = 10;
 	m_nLastConnectTime = 0;
 }
 
-CFrameNetThread::~CFrameNetThread()
+CNetHandler::~CNetHandler()
 {
 
 }
 
-int32_t CFrameNetThread::Initialize()
+int32_t CNetHandler::Initialize()
 {
 	m_pReactor = new(nothrow) CSelect();
 	int32_t nRet = m_pReactor->Create(0xffff);
@@ -45,12 +45,12 @@ int32_t CFrameNetThread::Initialize()
 	return S_OK;
 }
 
-int32_t CFrameNetThread::Resume()
+int32_t CNetHandler::Resume()
 {
 	return S_OK;
 }
 
-int32_t CFrameNetThread::Uninitialize()
+int32_t CNetHandler::Uninitialize()
 {
 	if(m_pReactor != NULL)
 	{
@@ -59,12 +59,42 @@ int32_t CFrameNetThread::Uninitialize()
 	return S_OK;
 }
 
-IReactor *CFrameNetThread::GetReactor()
+IReactor *CNetHandler::GetReactor()
 {
 	return m_pReactor;
 }
 
-bool CFrameNetThread::Execute()
+int32_t CNetHandler::RegistEvent(CSocket *pSocket, uint32_t nEvents)
+{
+	if(m_pReactor == NULL)
+	{
+		return 1;
+	}
+
+	return m_pReactor->RegistEvent(pSocket, nEvents);
+}
+
+int32_t CNetHandler::RemoveEvent(CSocket *pSocket, uint32_t nEvents)
+{
+	if(m_pReactor == NULL)
+	{
+		return 1;
+	}
+
+	return m_pReactor->RemoveEvent(pSocket, nEvents);
+}
+
+int32_t CNetHandler::DeleteEvent(CSocket *pSocket)
+{
+	if(m_pReactor == NULL)
+	{
+		return 1;
+	}
+
+	return m_pReactor->DeleteEvent(pSocket);
+}
+
+bool CNetHandler::Execute()
 {
 	bool bHasData = false;
 	//while(!GetTerminated())
@@ -80,7 +110,7 @@ bool CFrameNetThread::Execute()
 	return bHasData;
 }
 
-int32_t CFrameNetThread::MessagePump()
+int32_t CNetHandler::MessagePump()
 {
 	int32_t nMessageResult = SendMessage();
 
@@ -98,12 +128,12 @@ int32_t CFrameNetThread::MessagePump()
 	return nEventCount;
 }
 
-int32_t CFrameNetThread::SendMessage()
+int32_t CNetHandler::SendMessage()
 {
 	return S_OK;
 }
 
-int32_t CFrameNetThread::HandleTimeOutEvent()
+int32_t CNetHandler::HandleTimeOutEvent()
 {
 	int32_t nTimerCount = g_FrameSocketTimerMgt.GetTimerCount();
 

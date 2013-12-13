@@ -123,14 +123,9 @@ void CSocket::SetCreateTime(time_t nCreateTime)
 	m_nCreateTime = nCreateTime;
 }
 
-void CSocket::SetReactorObj(IReactor *pReactor)
+void CSocket::SetNetHandler(CNetHandler *pNetHandler)
 {
-	m_pReactor = pReactor;
-}
-
-IReactor *CSocket::GetReactorObj()
-{
-	return m_pReactor;
+	m_pNetHandler = pNetHandler;
 }
 
 int32_t CSocket::ReadEvent()
@@ -493,9 +488,9 @@ int32_t CSocket::ConnectTimeout()
 
 	m_nSocketStatus = enmSocketStatus_Closed;
 
-	if(m_pReactor != NULL)
+	if(m_pNetHandler != NULL)
 	{
-		m_pReactor->DeleteEvent(this);
+		m_pNetHandler->DeleteEvent(this);
 	}
 
 	return OnConnectTimeout();
@@ -796,11 +791,11 @@ void CSocket::ChangeWriteEvent()
 {
 	if((m_stSendBuffer.Size() > 0) && ((m_nIOEvents & mask_write) == 0))
 	{
-		m_pReactor->RegistEvent(this, mask_write);
+		m_pNetHandler->RegistEvent(this, mask_write);
 	}
 	else if((m_stSendBuffer.Size() <= 0) && ((m_nIOEvents & mask_write) != 0))
 	{
-		m_pReactor->RemoveEvent(this, mask_write);
+		m_pNetHandler->RemoveEvent(this, mask_write);
 	}
 }
 
