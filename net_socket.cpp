@@ -427,8 +427,8 @@ int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 	addr.sin_addr.s_addr = inet_addr(szRemoteIP);
 	addr.sin_port = htons(nPort);
 
-	m_pSocketTimer = g_FrameSocketTimerMgt.CreateSocketTimer(this,
-			static_cast<SocketTimerProc>(&CSocket::OnTimerEvent), 3);
+	m_pSocketTimer = g_ConnectTimerMgt.CreateConnectTimer(this,
+			static_cast<ConnectTimerProc>(&CSocket::OnTimerEvent), 3);
 	if(m_pSocketTimer == NULL)
 	{
 		return E_UNKNOWN;
@@ -465,7 +465,7 @@ int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 }
 
 //定时器事件
-int32_t CSocket::OnTimerEvent(CFrameSocketTimer *pTimer)
+int32_t CSocket::OnTimerEvent(CConnectTimer *pTimer)
 {
 	return ConnectTimeout();
 }
@@ -475,7 +475,7 @@ int32_t CSocket::ConnectTimeout()
 {
 	if(m_pSocketTimer != NULL)
 	{
-		g_FrameSocketTimerMgt.DestroySocketTimer(m_pSocketTimer);
+		g_ConnectTimerMgt.DestroyConnectTimer(m_pSocketTimer);
 		m_pSocketTimer = NULL;
 	}
 
@@ -501,7 +501,7 @@ int32_t CSocket::Connected()
 {
 	if(m_pSocketTimer != NULL)
 	{
-		g_FrameSocketTimerMgt.DestroySocketTimer(m_pSocketTimer);
+		g_ConnectTimerMgt.DestroyConnectTimer(m_pSocketTimer);
 		m_pSocketTimer = NULL;
 	}
 
@@ -541,7 +541,7 @@ int32_t CSocket::Disconnected(int32_t nCloseCode)
 {
 	if(m_pSocketTimer != NULL)
 	{
-		g_FrameSocketTimerMgt.DestroySocketTimer(m_pSocketTimer);
+		g_ConnectTimerMgt.DestroyConnectTimer(m_pSocketTimer);
 		m_pSocketTimer = NULL;
 	}
 

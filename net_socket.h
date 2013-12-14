@@ -148,7 +148,7 @@ protected:
 
 private:
 	//定时器事件
-	int32_t OnTimerEvent(CFrameSocketTimer *pTimer);
+	int32_t OnTimerEvent(CConnectTimer *pTimer);
 	//连接超时
 	int32_t ConnectTimeout();
 	//连接成功
@@ -176,7 +176,7 @@ protected:
 	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//发送缓存，在套接字异常或者系统发送缓冲满的情况下，数据将会被放进此缓存
 
 //	TimerIndex		m_nConnectTimerIndex;		//连接超时定时器索引
-	CFrameSocketTimer *m_pSocketTimer;
+	CConnectTimer *m_pSocketTimer;
 	CNetHandler		*m_pNetHandler;
 	uint32_t		m_nIOEvents;
 };

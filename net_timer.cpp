@@ -12,7 +12,7 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-CFrameSocketTimer *CFrameSocketTimerMgt::CreateSocketTimer(CSocket *pSocket, SocketTimerProc pTimerProc,
+CConnectTimer *CConnectTimerMgt::CreateConnectTimer(CSocket *pSocket, ConnectTimerProc pTimerProc,
 		int64_t nTimeOut)
 {
 	if((pSocket == NULL) || (nTimeOut <= 0))
@@ -20,7 +20,7 @@ CFrameSocketTimer *CFrameSocketTimerMgt::CreateSocketTimer(CSocket *pSocket, Soc
 		return NULL;
 	}
 
-	CFrameSocketTimer *pTimer = new(nothrow) CFrameSocketTimer();
+	CConnectTimer *pTimer = new(nothrow) CConnectTimer();
 	if(pTimer == NULL)
 	{
 		return NULL;
@@ -30,17 +30,17 @@ CFrameSocketTimer *CFrameSocketTimerMgt::CreateSocketTimer(CSocket *pSocket, Soc
 	pTimer->m_nStartTime = CDateTime::CurrentDateTime().Seconds();
 	pTimer->m_nEndTime = CDateTime::CurrentDateTime().Seconds() + nTimeOut;
 
-	m_stFrameSocketTimerList.push_back(pTimer);
+	m_stConnectTimerList.push_back(pTimer);
 
 	return pTimer;
 }
 
-CFrameSocketTimer *CFrameSocketTimerMgt::GetSocketTimer(CSocket *pSocket)
+CConnectTimer *CConnectTimerMgt::GetConnectTimer(CSocket *pSocket)
 {
-	CFrameSocketTimer *pTimer = NULL;
+	CConnectTimer *pTimer = NULL;
 
-	list<CFrameSocketTimer *>::iterator it = m_stFrameSocketTimerList.begin();
-	for(;it != m_stFrameSocketTimerList.end(); it++)
+	list<CConnectTimer *>::iterator it = m_stConnectTimerList.begin();
+	for(;it != m_stConnectTimerList.end(); it++)
 	{
 		if(pSocket == (*it)->pSocket)
 		{
@@ -52,12 +52,12 @@ CFrameSocketTimer *CFrameSocketTimerMgt::GetSocketTimer(CSocket *pSocket)
 	return pTimer;
 }
 
-CFrameSocketTimer *CFrameSocketTimerMgt::GetSocketTimer(SocketFD nSocketFD)
+CConnectTimer *CConnectTimerMgt::GetConnectTimer(SocketFD nSocketFD)
 {
-	CFrameSocketTimer *pTimer = NULL;
+	CConnectTimer *pTimer = NULL;
 
-	list<CFrameSocketTimer *>::iterator it = m_stFrameSocketTimerList.begin();
-	for(;it != m_stFrameSocketTimerList.end(); it++)
+	list<CConnectTimer *>::iterator it = m_stConnectTimerList.begin();
+	for(;it != m_stConnectTimerList.end(); it++)
 	{
 		if(nSocketFD == (*it)->pSocket->GetSocketFD())
 		{
@@ -69,31 +69,31 @@ CFrameSocketTimer *CFrameSocketTimerMgt::GetSocketTimer(SocketFD nSocketFD)
 	return pTimer;
 }
 
-CFrameSocketTimer *CFrameSocketTimerMgt::GetFirstSocketTimer()
+CConnectTimer *CConnectTimerMgt::GetFirstConnectTimer()
 {
-	CFrameSocketTimer *pTimer = NULL;
+	CConnectTimer *pTimer = NULL;
 
-	if(m_stFrameSocketTimerList.size() > 0)
+	if(m_stConnectTimerList.size() > 0)
 	{
-		pTimer = m_stFrameSocketTimerList.front();
+		pTimer = m_stConnectTimerList.front();
 	}
 
 	return pTimer;
 }
 
-int32_t CFrameSocketTimerMgt::DestroySocketTimer(CFrameSocketTimer *pTimer)
+int32_t CConnectTimerMgt::DestroyConnectTimer(CConnectTimer *pTimer)
 {
 	if(pTimer == NULL)
 	{
 		return S_OK;
 	}
 
-	list<CFrameSocketTimer *>::iterator it = m_stFrameSocketTimerList.begin();
-	for(;it != m_stFrameSocketTimerList.end(); it++)
+	list<CConnectTimer *>::iterator it = m_stConnectTimerList.begin();
+	for(;it != m_stConnectTimerList.end(); it++)
 	{
 		if(pTimer == *it)
 		{
-			m_stFrameSocketTimerList.erase(it);
+			m_stConnectTimerList.erase(it);
 			delete pTimer;
 			break;
 		}
@@ -102,9 +102,9 @@ int32_t CFrameSocketTimerMgt::DestroySocketTimer(CFrameSocketTimer *pTimer)
 	return S_OK;
 }
 
-int32_t CFrameSocketTimerMgt::GetTimerCount()
+int32_t CConnectTimerMgt::GetConnectTimerCount()
 {
-	return m_stFrameSocketTimerList.size();
+	return m_stConnectTimerList.size();
 }
 
 NETEVENT_NAMESPACE_END

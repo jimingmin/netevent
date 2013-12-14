@@ -135,18 +135,18 @@ int32_t CNetHandler::SendMessage()
 
 int32_t CNetHandler::HandleTimeOutEvent()
 {
-	int32_t nTimerCount = g_FrameSocketTimerMgt.GetTimerCount();
+	int32_t nTimerCount = g_ConnectTimerMgt.GetConnectTimerCount();
 
 	for(int32_t i = 0; i < nTimerCount; ++i)
 	{
-		CFrameSocketTimer *pTimer = g_FrameSocketTimerMgt.GetFirstSocketTimer();
+		CConnectTimer *pTimer = g_ConnectTimerMgt.GetFirstConnectTimer();
 		if(pTimer->m_nEndTime > CDateTime::CurrentDateTime().Seconds())
 		{
 			continue;
 		}
 
 		CSocket *pSocket = pTimer->pSocket;
-		SocketTimerProc pTimerProc = pTimer->pTimerProc;
+		ConnectTimerProc pTimerProc = pTimer->pTimerProc;
 
 		(pSocket->*pTimerProc)(pTimer);
 	}

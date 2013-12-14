@@ -18,14 +18,14 @@ using namespace std;
 NETEVENT_NAMESPACE_BEGIN
 
 class CSocket;
-class CFrameSocketTimer;
+class CConnectTimer;
 
-typedef int32_t (CSocket::*SocketTimerProc)(CFrameSocketTimer *pTimer);
+typedef int32_t (CSocket::*ConnectTimerProc)(CConnectTimer *pTimer);
 
-class CFrameSocketTimer
+class CConnectTimer
 {
 public:
-	CFrameSocketTimer()
+	CConnectTimer()
 	{
 		Reset();
 	}
@@ -39,32 +39,32 @@ public:
 	}
 
 	CSocket			*pSocket;
-	SocketTimerProc	pTimerProc;
+	ConnectTimerProc	pTimerProc;
 	int64_t			m_nStartTime;
 	int64_t			m_nEndTime;
 };
 
-class CFrameSocketTimerMgt
+class CConnectTimerMgt
 {
 public:
 
-	CFrameSocketTimer *CreateSocketTimer(CSocket *pSocket, SocketTimerProc pTimerProc, int64_t nTimeOut);
+	CConnectTimer *CreateConnectTimer(CSocket *pSocket, ConnectTimerProc pTimerProc, int64_t nTimeOut);
 
-	CFrameSocketTimer *GetSocketTimer(CSocket *pSocket);
+	CConnectTimer *GetConnectTimer(CSocket *pSocket);
 
-	CFrameSocketTimer *GetSocketTimer(SocketFD nSocketFD);
+	CConnectTimer *GetConnectTimer(SocketFD nSocketFD);
 
-	CFrameSocketTimer *GetFirstSocketTimer();
+	CConnectTimer *GetFirstConnectTimer();
 
-	int32_t DestroySocketTimer(CFrameSocketTimer *pTimer);
+	int32_t DestroyConnectTimer(CConnectTimer *pTimer);
 
-	int32_t GetTimerCount();
+	int32_t GetConnectTimerCount();
 
 protected:
-	list<CFrameSocketTimer *>		m_stFrameSocketTimerList;
+	list<CConnectTimer *>		m_stConnectTimerList;
 };
 
-#define	g_FrameSocketTimerMgt					CSingleton<CFrameSocketTimerMgt>::GetInstance()
+#define	g_ConnectTimerMgt					CSingleton<CConnectTimerMgt>::GetInstance()
 
 NETEVENT_NAMESPACE_END
 
