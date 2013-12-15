@@ -1,13 +1,14 @@
 /*
  * net_select.cpp
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013ï¿½ï¿½11ï¿½ï¿½4ï¿½ï¿½
  *      Author: jimm
  */
 
 #include "net_select.h"
 #include "net_namespace.h"
 #include "net_socket.h"
+#include "../common/common_api.h"
 
 NETEVENT_NAMESPACE_BEGIN
 

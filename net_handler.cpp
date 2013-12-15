@@ -33,9 +33,17 @@ CNetHandler::~CNetHandler()
 
 }
 
-int32_t CNetHandler::Initialize()
+int32_t CNetHandler::CreateReactor(int32_t nReactorType/* = enmReactorType_Epoll*/)
 {
-	m_pReactor = new(nothrow) CSelect();
+	if(nReactorType == enmReactorType_Select)
+	{
+		m_pReactor = new(nothrow) CSelect();
+	}
+	else
+	{
+		m_pReactor = new(nothrow) CEpoll();
+	}
+
 	int32_t nRet = m_pReactor->Create(0xffff);
 	if(nRet < 0)
 	{
@@ -45,12 +53,7 @@ int32_t CNetHandler::Initialize()
 	return S_OK;
 }
 
-int32_t CNetHandler::Resume()
-{
-	return S_OK;
-}
-
-int32_t CNetHandler::Uninitialize()
+int32_t CNetHandler::DestoryReactor()
 {
 	if(m_pReactor != NULL)
 	{
@@ -94,7 +97,7 @@ int32_t CNetHandler::DeleteEvent(CSocket *pSocket)
 	return m_pReactor->DeleteEvent(pSocket);
 }
 
-bool CNetHandler::Execute()
+bool CNetHandler::Process()
 {
 	bool bHasData = false;
 	//while(!GetTerminated())

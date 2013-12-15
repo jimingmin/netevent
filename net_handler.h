@@ -13,16 +13,17 @@
 #include "net_errordef.h"
 #include "net_socket.h"
 #include "net_epoll.h"
-#include "../common/common_singleton.h"
-
 
 NETEVENT_NAMESPACE_BEGIN
 
-
-//最大的服务器类型个数
-//#define MAX_PEERTYPE_COUNT 64
-
 #define RECONNECT_TIME		10//(s)
+
+enum
+{
+	enmReactorType_Select		= 0x00,		//select模式
+	enmReactorType_Epoll		= 0x01,		//epoll模式
+};
+
 
 class CNetHandler
 {
@@ -30,13 +31,11 @@ public:
 	CNetHandler();
 	virtual ~CNetHandler();
 
-	int32_t Initialize();
+	int32_t CreateReactor(int32_t nReacotType = enmReactorType_Epoll);
 
-	int32_t Resume();
+	int32_t DestoryReactor();
 
-	int32_t Uninitialize();
-
-	bool Execute();
+	bool Process();
 
 	IReactor *GetReactor();
 
@@ -59,9 +58,6 @@ protected:
 	int64_t		m_nReconnectTime;
 	int64_t		m_nLastConnectTime;
 };
-
-
-#define	g_NetHandler					CSingleton<CNetHandler>::GetInstance()
 
 NETEVENT_NAMESPACE_END
 

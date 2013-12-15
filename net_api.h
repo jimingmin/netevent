@@ -1,7 +1,7 @@
 /*
  * net_api.h
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013ï¿½ï¿½11ï¿½ï¿½4ï¿½ï¿½
  *      Author: jimm
  */
 
@@ -37,9 +37,6 @@ extern "C"
 int32_t set_non_block(int32_t fd);
 
 char *inet_ntoa_f(uint32_t ip);
-
-//CPUÐÝÃßº¯Êý
-void Delay(uint32_t usec);
 
 #ifdef __cplusplus
 }

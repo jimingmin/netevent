@@ -1,7 +1,7 @@
 /*
  * net_api.cpp
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013ï¿½ï¿½11ï¿½ï¿½4ï¿½ï¿½
  *      Author: jimm
  */
 
@@ -44,29 +44,6 @@ char *inet_ntoa_f(uint32_t ip)
 	sprintf(buf, "%d.%d.%d.%d", str[0] & 0xff, str[1] & 0xff, str[2] & 0xff, str[3] & 0xff);
 
 	return buf;
-}
-
-//CPUÐÝÃßº¯Êý
-void Delay(uint32_t usec)
-{
-	struct timeval timeout;
-	fd_set fds;
-	FD_ZERO(&fds);
-#ifdef WIN32
-	SOCKET soc;
-	soc = socket(AF_INET, SOCK_DGRAM, 0);
-	FD_SET(soc, &fds);
-#endif
-	timeout.tv_sec = usec / 1000000;
-	timeout.tv_usec = usec % 1000000;
-	int ret = select(0, NULL, NULL, &fds, &timeout);
-	if(0 > ret)
-	{
-		perror("select");
-	}
-#ifdef WIN32
-	closesocket(soc);
-#endif
 }
 
 #else

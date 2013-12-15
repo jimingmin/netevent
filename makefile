@@ -1,4 +1,19 @@
-include Makefile_public
+BASE_DIR= ${HOME}
+
+DEBUG_LIB_DIR = $(BASE_DIR)/lib/Debug
+RELEASE_LIB_DIR = $(BASE_DIR)/lib/Release
+
+ifeq ($(mode),d)
+	LIB_DIR = $(DEBUG_LIB_DIR)
+	CPPFLAGS= -g -fPIC -Wall -DDEBUG $(INC) -Wno-invalid-offsetof
+	LDFLAGS = -g -fPIC -L$(LIB_DIR)
+else
+	LIB_DIR = $(RELEASE_LIB_DIR)
+	CPPFLAGS= -g -fPIC -Wall  $(INC) -Wno-invalid-offsetof
+	LDFLAGS = -g -fPIC -L$(LIB_DIR)
+endif
+
+OBJ_DIR	= ./.objs
 
 TARGET	= $(DEBUG_TARGET)
 

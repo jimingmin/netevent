@@ -8,6 +8,7 @@
 #include "net_api.h"
 #include "net_socket.h"
 #include "net_eventid.h"
+#include "net_handler.h"
 
 #include <time.h>
 
@@ -16,6 +17,12 @@ NETEVENT_NAMESPACE_BEGIN
 CSocket::CSocket()
 {
 	Reset();
+}
+
+CSocket::CSocket(CNetHandler *pNetHandler)
+{
+	Reset();
+	m_pNetHandler = pNetHandler;
 }
 
 CSocket::~CSocket()

@@ -1,13 +1,14 @@
 /*
  * net_epoll.cpp
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013ï¿½ï¿½11ï¿½ï¿½4ï¿½ï¿½
  *      Author: jimm
  */
 
 
 #include "net_epoll.h"
 #include "net_socket.h"
+#include "../common/common_api.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -68,7 +69,7 @@ int32_t CEpoll::RegistEvent(CSocket *pSocket, uint32_t nEvents)
 	struct epoll_event event;
 	event.data.ptr = (void *)pSocket;
 	event.events = nIOEvents;
-	//±íÃ÷²»ÊÇµÚÒ»´ÎÌí¼Ó
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½
 	if(pSocket->GetIOEvents() > 0)
 	{
 		if (epoll_ctl(m_nEpollFD, EPOLL_CTL_MOD, pSocket->GetSocketFD(), &event) < 0)

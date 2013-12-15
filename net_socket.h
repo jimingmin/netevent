@@ -14,7 +14,6 @@
 #include "net_namespace.h"
 #include "net_impl.h"
 #include "net_timer.h"
-#include "net_handler.h"
 #include "../common/common_cyclebuffer.h"
 
 #include <errno.h>
@@ -24,10 +23,13 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
+class CNetHandler;
+
 class CSocket: public IIOHandler
 {
 public:
 	CSocket();
+	CSocket(CNetHandler *pNetHandler);
 	virtual ~CSocket();
 
 	virtual void Reset()
