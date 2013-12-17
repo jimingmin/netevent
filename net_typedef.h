@@ -35,6 +35,8 @@ enum
 };
 #endif
 
+typedef uint32_t		ConnectionID;
+
 //Ì×½Ó×ÖÀàĞÍ
 typedef enum enmSocketType
 {

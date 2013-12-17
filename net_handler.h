@@ -13,6 +13,7 @@
 #include "net_errordef.h"
 #include "net_socket.h"
 #include "net_epoll.h"
+#include "net_queue.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -57,6 +58,8 @@ protected:
 
 	int64_t		m_nReconnectTime;
 	int64_t		m_nLastConnectTime;
+
+	CNetQueue	m_stSendQueue;
 };
 
 NETEVENT_NAMESPACE_END

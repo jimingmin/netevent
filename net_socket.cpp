@@ -82,12 +82,20 @@ char *CSocket::GetPeerAddressStr()
 	return m_szClientAddress;
 }
 
+void CSocket::SetPeerAddress(const char *szAddress)
+{
+	if(szAddress != NULL)
+	{
+		strncpy(m_szClientAddress, szAddress, strlen(szAddress));
+	}
+}
+
 void CSocket::SetPeerAddress(uint32_t nAddress)
 {
 	m_nPeerAddress = nAddress;
 
 	char *pAddress = inet_ntoa_f(m_nPeerAddress);
-	strncpy(m_szClientAddress, pAddress, sizeof(m_szClientAddress));
+	strncpy(m_szClientAddress, pAddress, strlen(pAddress));
 }
 
 uint32_t CSocket::GetPeerAddress()
@@ -133,6 +141,17 @@ void CSocket::SetCreateTime(time_t nCreateTime)
 void CSocket::SetNetHandler(CNetHandler *pNetHandler)
 {
 	m_pNetHandler = pNetHandler;
+}
+
+
+void CSocket::SetSocketTimer(CConnectTimer *pTimer)
+{
+	m_pSocketTimer = pTimer;
+}
+
+CConnectTimer *CSocket::GetSocketTimer()
+{
+	return m_pSocketTimer;
 }
 
 int32_t CSocket::ReadEvent()
@@ -250,7 +269,7 @@ int32_t CSocket::OnDisconnect(int32_t nCloseCode)
 //发送缓存中剩余的数据
 int32_t CSocket::SendRestData()
 {
-	int32_t nRet = S_OK;
+	int32_t nSendBytes = 0;
 	//int32_t nWriteBytes = 0;
 	//先发送缓存中剩余的数据
 	if(m_stSendBuffer.Size() > 0)
@@ -259,29 +278,29 @@ int32_t CSocket::SendRestData()
 		int32_t nWantSize = sizeof(arrPacketBuf);
 
 		int32_t nRealSize = m_stSendBuffer.Read(arrPacketBuf, nWantSize);
-		int32_t nBytes = nWrite(arrPacketBuf, nRealSize);
-		if(nBytes < nRealSize)
+		nSendBytes = nWrite(arrPacketBuf, nRealSize);
+		if(nSendBytes < nRealSize)
 		{
 			int32_t nRewriteIndex = 0;
-			if(nBytes > 0)
+			if(nSendBytes > 0)
 			{
-				nRewriteIndex = nBytes;
+				nRewriteIndex = nSendBytes;
 			}
 			//剩余数据写回缓存
 			m_stSendBuffer.WriteToHead(&arrPacketBuf[nRewriteIndex], nRealSize - nRewriteIndex);
 			if(errno != EAGAIN)
 			{
-				nRet = E_SOCKETERROR;
+				nSendBytes = -1;
 				//break;
 			}
 		}
 	}
 	ChangeWriteEvent();
 
-	return nRet;
+	return nSendBytes;
 }
 
-int32_t CSocket::OpenSocketAsServer(const char* szLocalIP, uint16_t nPort)
+int32_t CSocket::OpenSocket()
 {
 	//若socket连接已存在则先关闭套接字
 	if (enmInvalidSocketFD != m_nSocketFD)
@@ -296,95 +315,12 @@ int32_t CSocket::OpenSocketAsServer(const char* szLocalIP, uint16_t nPort)
 		return E_SOCKETCREATE;
 	}
 
-	if((m_nSocketType == enmSocketType_Listen) || (nPort > 0))
-	{
-		//设置套接字属性
-		int32_t op = 1;
-		int32_t ret = setsockopt(m_nSocketFD, SOL_SOCKET, SO_REUSEADDR, &op, sizeof(op));
-		if (0 != ret)
-		{
-			CloseSocket();
-			return E_SOCKETOPTION;
-		}
-		//填充服务器地址&端口信息
-		struct sockaddr_in addr;
-		addr.sin_family = AF_INET;
-		if((NULL == szLocalIP) || (strlen(szLocalIP) == 0))
-		{
-			addr.sin_addr.s_addr = htonl(INADDR_ANY);
-		}
-		else
-		{
-			addr.sin_addr.s_addr = inet_addr(szLocalIP);
-		}
-		addr.sin_port = htons(nPort);
-
-		ret = bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
-		if (0 != ret)
-		{
-			CloseSocket();
-			return E_SOCKETBIND;
-		}
-
-		//开始监听
-		ret = listen(m_nSocketFD, SOMAXCONN);
-		if (0 != ret)
-		{
-			CloseSocket();
-			return E_SOCKETLISTEN;
-		}
-
-		m_nListenAddress = addr.sin_addr.s_addr;
-		m_nListenPort = nPort;
-	}
-
-	//设置为非阻塞
 	set_non_block(m_nSocketFD);
-
-	//更新套接字类型和状态
-	m_nSocketType = enmSocketType_Listen;
 	m_nSocketStatus = enmSocketStatus_Opened;
 
 	return S_OK;
 }
 
-int32_t CSocket::OpenSocketAsClient(const char* szLocalIP/* = NULL*/)
-{
-	//若socket连接已存在则先关闭套接字
-	if (enmInvalidSocketFD != m_nSocketFD)
-	{
-		CloseSocket(SYS_EVENT_CONN_CONFLICT);
-	}
-	//打开套接字
-	m_nSocketFD = socket(AF_INET, SOCK_STREAM, 0);
-	if (enmInvalidSocketFD == m_nSocketFD)
-	{
-		return E_SOCKETCREATE;
-	}
-
-	if (NULL != szLocalIP)
-	{
-		struct sockaddr_in addr;
-		memset(&addr, 0, sizeof(addr));
-
-		addr.sin_family = AF_INET;
-		addr.sin_addr.s_addr = inet_addr(szLocalIP);
-		int32_t ret = bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
-		if (0 != ret)
-		{
-			CloseSocket();
-			return E_SOCKETBIND;
-		}
-
-	}
-
-	set_non_block(m_nSocketFD);
-
-	//更新套接字类型和状态
-	m_nSocketType = enmSocketType_Communicate;
-	m_nSocketStatus = enmSocketStatus_Opened;
-	return S_OK;
-}
 
 //关闭套接字
 void CSocket::CloseSocket(int32_t nCloseCode)
@@ -488,7 +424,7 @@ int32_t CSocket::ConnectTimeout()
 
 	//多次发送连接请求的情况下，可能某一次连接成功了，另外一些连接请求超时
 	if((m_nSocketStatus == enmSocketStatus_Connected) ||
-			(m_nSocketStatus == enmSocketStatus_Available))
+				(m_nSocketStatus == enmSocketStatus_Available))
 	{
 		return S_OK;
 	}
@@ -532,8 +468,8 @@ int32_t CSocket::Connected()
 
 	//如果本地地址和端口等于远程地址和端口，就断开连接
 	if(((strcmp(m_szClientAddress, "127.0.0.1") == 0) ||
-			(strcmp(m_szClientAddress, inet_ntoa(stLocalAddr.sin_addr)) == 0)) &&
-			(stLocalAddr.sin_port == htons(m_nPeerPort)))
+				(strcmp(m_szClientAddress, inet_ntoa(stLocalAddr.sin_addr)) == 0)) &&
+				(stLocalAddr.sin_port == htons(m_nPeerPort)))
 	{
 		CloseSocket(SYS_EVENT_CONN_CONFLICT);
 

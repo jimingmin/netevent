@@ -12,6 +12,7 @@
 #include "net_timer.h"
 #include "net_select.h"
 #include "net_epoll.h"
+#include "net_connmgt.h"
 #include "../common/common_datetime.h"
 
 #ifndef WIN32
@@ -100,16 +101,15 @@ int32_t CNetHandler::DeleteEvent(CSocket *pSocket)
 bool CNetHandler::Process()
 {
 	bool bHasData = false;
-	//while(!GetTerminated())
-	//{
-		//消息泵
-		if(MessagePump() > 0)
-		{
-			bHasData = true;
-		}
-		//处理socket超时事件
-		HandleTimeOutEvent();
-	//}
+
+	//消息泵
+	if(MessagePump() > 0)
+	{
+		bHasData = true;
+	}
+	//处理socket超时事件
+	HandleTimeOutEvent();
+
 	return bHasData;
 }
 
@@ -133,6 +133,21 @@ int32_t CNetHandler::MessagePump()
 
 int32_t CNetHandler::SendMessage()
 {
+	if(m_stSendQueue.Empty())
+	{
+		return S_FALSE;
+	}
+
+	NetPacket *pPacket = m_stSendQueue.Pop();
+	CConnection *pConnection = g_ConnMgt.GetConnection(pPacket->m_nConnectionID);
+	if(pConnection == NULL)
+	{
+		return S_FALSE;
+	}
+
+	int32_t nSendBytes = 0;
+	pConnection->Send(pPacket->m_pNetPacket, pPacket->m_nNetPacketLen, nSendBytes);
+
 	return S_OK;
 }
 

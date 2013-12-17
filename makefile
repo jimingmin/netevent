@@ -3,6 +3,8 @@ BASE_DIR= ${HOME}
 DEBUG_LIB_DIR = $(BASE_DIR)/lib/Debug
 RELEASE_LIB_DIR = $(BASE_DIR)/lib/Release
 
+INC = -I$(NETEVENT_INCLUDE_DIR)
+
 ifeq ($(mode),d)
 	LIB_DIR = $(DEBUG_LIB_DIR)
 	CPPFLAGS= -g -fPIC -Wall -DDEBUG $(INC) -Wno-invalid-offsetof
@@ -21,8 +23,6 @@ DEBUG_TARGET = $(LIB_DIR)/libnetevent.a
 
 SRC = $(wildcard *.cpp)
 OBJS = $(addprefix $(OBJ_DIR)/,$(subst .cpp,.o,$(SRC)))
-
-INC = -I$(NETEVENT_INCLUDE_DIR)
 
 all : $(TARGET)
 

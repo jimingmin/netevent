@@ -25,7 +25,7 @@ NETEVENT_NAMESPACE_BEGIN
 
 class CNetHandler;
 
-class CSocket: public IIOHandler
+class CSocket: public IEventHandler
 {
 public:
 	CSocket();
@@ -54,8 +54,8 @@ public:
 		m_nLastRecvTime = 0;
 		m_nTotalSendBytes = 0;
 		m_nLastSendTime = 0;
-		m_stRecvBuffer.Reset();
-		m_stSendBuffer.Reset();
+		//m_stRecvBuffer.Reset();
+		//m_stSendBuffer.Reset();
 //		m_nConnectTimerIndex = enmInvalidTimerIndex;
 		m_pSocketTimer = NULL;
 		m_pNetHandler = NULL;
@@ -80,6 +80,8 @@ public:
 
 	char *GetPeerAddressStr();
 
+	void SetPeerAddress(const char *szAddress);
+
 	void SetPeerAddress(uint32_t nAddress);
 
 	uint32_t GetPeerAddress();
@@ -100,16 +102,17 @@ public:
 
 	void SetNetHandler(CNetHandler *pNetHandler);
 
+	void SetSocketTimer(CConnectTimer *pTimer);
+
+	CConnectTimer *GetSocketTimer();
+
 	virtual int32_t ReadEvent();
 
 	virtual int32_t WriteEvent();
 
 	virtual int32_t ErrorEvent();
 
-	//打开套接字
-	virtual int32_t OpenSocketAsServer(const char* szLocalIP, uint16_t nPort);
-	//打开套接字
-	virtual int32_t OpenSocketAsClient(const char* szLocalIP = NULL);
+	virtual int32_t OpenSocket();
 	//关闭套接字
 	virtual void CloseSocket(int32_t nCloseCode = 0);
 	//与服务端建立连接
@@ -123,6 +126,8 @@ public:
 
 	void SetIOEvents(uint32_t nEvents);
 
+	//定时器事件
+	int32_t OnTimerEvent(CConnectTimer *pTimer);
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode) = 0;
@@ -149,8 +154,6 @@ protected:
 	void ChangeWriteEvent();
 
 private:
-	//定时器事件
-	int32_t OnTimerEvent(CConnectTimer *pTimer);
 	//连接超时
 	int32_t ConnectTimeout();
 	//连接成功
@@ -174,7 +177,7 @@ protected:
 	time_t			m_nLastSendTime;			//最近一次发给对端数据的时间
 	int32_t			m_nTotalRecvBytes;			//收到的数据大小
 	int32_t			m_nTotalSendBytes;			//发送的数据大小
-	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
+//	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
 	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//发送缓存，在套接字异常或者系统发送缓冲满的情况下，数据将会被放进此缓存
 
 //	TimerIndex		m_nConnectTimerIndex;		//连接超时定时器索引
