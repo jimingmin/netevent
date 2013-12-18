@@ -38,10 +38,10 @@ public:
 		m_nEndTime = 0;
 	}
 
-	CSocket			*pSocket;
+	CSocket				*pSocket;
 	ConnectTimerProc	pTimerProc;
-	int64_t			m_nStartTime;
-	int64_t			m_nEndTime;
+	int64_t				m_nStartTime;
+	int64_t				m_nEndTime;
 };
 
 class CConnectTimerMgt

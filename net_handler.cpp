@@ -14,6 +14,7 @@
 #include "net_epoll.h"
 #include "net_connmgt.h"
 #include "../common/common_datetime.h"
+#include "../common/common_memmgt.h"
 
 #ifndef WIN32
 #include<cstring>
@@ -151,7 +152,13 @@ int32_t CNetHandler::SendPacket()
 	}
 
 	int32_t nSendBytes = 0;
-	pConnection->Send(pPacket->m_pNetPacket, pPacket->m_nNetPacketLen, nSendBytes);
+	if(pConnection->Send(pPacket->m_pNetPacket, pPacket->m_nNetPacketLen, nSendBytes) == S_OK)
+	{
+		//Ð´µ½Ñ­»·bufÁË
+		pConnection->WritedToLowerBuf(pPacket->m_pNetPacket, nSendBytes);
+	}
+
+	DELETE(pPacket);
 
 	return S_OK;
 }
@@ -163,7 +170,7 @@ int32_t CNetHandler::HandleTimeOutEvent()
 	for(int32_t i = 0; i < nTimerCount; ++i)
 	{
 		CConnectTimer *pTimer = g_ConnectTimerMgt.GetFirstConnectTimer();
-		if(pTimer->m_nEndTime > CDateTime::CurrentDateTime().Seconds())
+		if(pTimer->m_nEndTime > CDateTime::CurrentDateTime().Millisecond())
 		{
 			continue;
 		}

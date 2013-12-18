@@ -22,7 +22,7 @@ CConnection::CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser,
 
 int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 {
-	uint8_t *pMem = (uint8_t *)malloc(sizeof(NetPacket) + nBufSize + 1000);//MALLOC(sizeof(NetPacket) + nBufSize);
+	uint8_t *pMem = MALLOC(sizeof(NetPacket) + nBufSize);
 
 	NetPacket *pPacket = new(pMem) NetPacket();
 	pPacket->m_nNetPacketLen = nBufSize;
@@ -30,6 +30,13 @@ int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 	memcpy(pPacket->m_pNetPacket, pBuf, nBufSize);
 
 	m_pNetHandler->PushPacket(pPacket);
+
+	return nBufSize;
+}
+
+int32_t CConnection::WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize)
+{
+	m_pIOHandler->OnSent(this, pBuf, nBufSize);
 
 	return nBufSize;
 }
@@ -85,8 +92,6 @@ int32_t CConnection::OnWrite(int32_t nErrorCode)
 		return E_SOCKETERROR;
 	}
 
-	m_pIOHandler->OnSent(this, NULL, 0);
-
 	return S_OK;
 }
 
@@ -110,6 +115,8 @@ int32_t CConnection::OnConnected()
 //连接超时回调
 int32_t CConnection::OnConnectTimeout()
 {
+	m_pIOHandler->OnTimeout(this);
+
 	return S_OK;
 }
 

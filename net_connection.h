@@ -20,6 +20,9 @@ public:
 	CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler);
 
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
+
+	int32_t WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize);
+
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode);

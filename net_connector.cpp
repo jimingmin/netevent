@@ -23,7 +23,7 @@ CConnector::CConnector(CNetHandler *pNetHandler, IPacketParserFactory *pFactory,
 	m_pIOHandler = pIOHandler;
 }
 
-int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort)
+int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTimeout/* = 3000*/)
 {
 	if (NULL == szRemoteIP)
 	{
@@ -68,7 +68,7 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort)
 	addr.sin_port = htons(nPort);
 
 	CConnectTimer *pConnTimer = g_ConnectTimerMgt.CreateConnectTimer(pSocket,
-			static_cast<ConnectTimerProc>(&CConnection::OnTimerEvent), 3);
+			static_cast<ConnectTimerProc>(&CConnection::OnTimerEvent), nTimeout);
 	if(pConnTimer == NULL)
 	{
 		m_pPacketParserFactory->Destory(pPacketParser);
