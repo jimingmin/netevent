@@ -140,8 +140,8 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->ReadEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				m_stSocketMap.erase(it++);
 				continue;
@@ -152,8 +152,8 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->WriteEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				m_stSocketMap.erase(it++);
 				continue;
@@ -164,8 +164,8 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->ErrorEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				m_stSocketMap.erase(it++);
 				continue;

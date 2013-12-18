@@ -9,27 +9,27 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-int32_t CIOHandlerAdapter::OnOpened(IEventHandler *pHandler)
+int32_t CIOHandlerAdapter::OnOpened(IIOSession *pIoSession)
 {
 	return 0;
 }
 
-int32_t CIOHandlerAdapter::OnRecved(IEventHandler *pHandler, uint8_t *pBuf, uint32_t nBufSize)
+int32_t CIOHandlerAdapter::OnRecved(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize)
 {
 	return 0;
 }
 
-int32_t CIOHandlerAdapter::OnSent(IEventHandler *pHandler, uint8_t *pBuf, uint32_t nBufSize)
+int32_t CIOHandlerAdapter::OnSent(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize)
 {
 	return 0;
 }
 
-int32_t CIOHandlerAdapter::OnClosed(IEventHandler *pHandler)
+int32_t CIOHandlerAdapter::OnClosed(IIOSession *pIoSession)
 {
 	return 0;
 }
 
-int32_t CIOHandlerAdapter::OnError(IEventHandler *pHandler)
+int32_t CIOHandlerAdapter::OnError(IIOSession *pIoSession)
 {
 	return 0;
 }

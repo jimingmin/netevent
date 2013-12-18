@@ -25,7 +25,7 @@ NETEVENT_NAMESPACE_BEGIN
 
 class CNetHandler;
 
-class CSocket: public IEventHandler
+class CSocket: public IIOSession
 {
 public:
 	CSocket();
@@ -35,17 +35,15 @@ public:
 	virtual void Reset()
 	{
 		Clear();
-
-		m_nSocketAttr = enmSocketAttr_Unknown;
-		m_nBelongPort = 0;
 	}
 
 	//子类socket如果需要重置数据成员，最好派生此函数
 	virtual void Clear()
 	{
+		m_nSessionID = 0;
 		m_nSocketFD = enmInvalidSocketFD;
-		m_nSocketType = enmSocketType_Communicate;
-		m_nSocketStatus = enmSocketStatus_Closed;
+		m_nSessionType = enmSessionType_Communicate;
+		m_nSessionStatus = enmSessionStatus_Closed;
 		memset(m_szClientAddress, 0, sizeof(m_szClientAddress));
 		m_nPeerAddress = 0;
 		m_nPeerPort = 0;
@@ -54,63 +52,50 @@ public:
 		m_nLastRecvTime = 0;
 		m_nTotalSendBytes = 0;
 		m_nLastSendTime = 0;
-		//m_stRecvBuffer.Reset();
-		//m_stSendBuffer.Reset();
-//		m_nConnectTimerIndex = enmInvalidTimerIndex;
-		m_pSocketTimer = NULL;
+		m_pConnectTimer = NULL;
 		m_pNetHandler = NULL;
 		m_nIOEvents = 0;
 	}
+	//设置会话ID,全局唯一
+	virtual void SetSessionID(SessionID nID);
+	//获取会话ID,全局唯一
+	virtual SessionID GetSessionID();
 	//设置套接字描述符
-	void SetSocketFD(SocketFD nSocketFD);
+	virtual void SetSocketFD(SocketFD nSocketFD);
 	//获取套接字描述符
-	SocketFD GetSocketFD() const;
+	virtual SocketFD GetSocketFD() const;
 	//设置套接字状态
-	void SetSocketStatus(SocketStatus nSocketStatus);
+	virtual void SetSessionStatus(SessionStatus nSocketStatus);
 	//获取套接字状态
-	SocketStatus GetStatus() const;
-
-	void SetSocketType(SocketType nSocketType);
-
-	SocketType GetSocketType();
-
-	void SetSocketAttr(SocketAttr nSocketAttr);
-
-	SocketAttr GetSocketAttr();
-
-	char *GetPeerAddressStr();
-
-	void SetPeerAddress(const char *szAddress);
-
-	void SetPeerAddress(uint32_t nAddress);
-
-	uint32_t GetPeerAddress();
-
-	void SetPeerPort(uint16_t nPort);
-
-	uint16_t GetPeerPort();
-
-	uint32_t GetListenAddress();
-
-	uint16_t GetListenPort();
-
-	void SetBelongPort(uint16_t nPort);
-
-	uint16_t GetBelongPort();
-
-	void SetCreateTime(time_t nCreateTime);
-
-	void SetNetHandler(CNetHandler *pNetHandler);
-
-	void SetSocketTimer(CConnectTimer *pTimer);
-
-	CConnectTimer *GetSocketTimer();
+	virtual SessionStatus GetSessionStatus() const;
+	//设置会话类型
+	virtual void SetSessionType(SessionType nSocketType);
+	//获取会话类型
+	virtual SessionType GetSessionType();
+	//设置远端地址
+	virtual void SetPeerAddress(const char *szAddress);
+	//设置远端地址
+	virtual void SetPeerAddress(uint32_t nAddress);
+	//获取远端地址
+	virtual char *GetPeerAddressStr();
+	//获取远端地址
+	virtual uint32_t GetPeerAddress();
+	//设置远端端口
+	virtual void SetPeerPort(uint16_t nPort);
+	//获取远端端口
+	virtual uint16_t GetPeerPort();
+	//获取本地地址
+	virtual uint32_t GetLocalAddress();
+	//获取本地端口
+	virtual uint16_t GetLocalPort();
 
 	virtual int32_t ReadEvent();
 
 	virtual int32_t WriteEvent();
 
 	virtual int32_t ErrorEvent();
+
+	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
 
 	virtual int32_t OpenSocket();
 	//关闭套接字
@@ -121,6 +106,14 @@ public:
 	virtual int32_t Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes);
 	//发送数据
 	virtual int32_t Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nSendBytes);
+
+	void SetCreateTime(time_t nCreateTime);
+
+	void SetNetHandler(CNetHandler *pNetHandler);
+
+	void SetConnectTimer(CConnectTimer *pTimer);
+
+	CConnectTimer *GetSessionTimer();
 
 	uint32_t GetIOEvents();
 
@@ -162,16 +155,15 @@ private:
 	int32_t Disconnected(int32_t nCloseCode);
 
 protected:
-	SocketFD		m_nSocketFD;
-	SocketType		m_nSocketType;
-	SocketStatus	m_nSocketStatus;
-	SocketAttr		m_nSocketAttr;
+	SessionID		m_nSessionID;				//全局唯一ID
+	SocketFD		m_nSocketFD;				//套接字描述符
+	SessionType		m_nSessionType;				//表示会话是监听类型还是通信类型
+	SessionStatus	m_nSessionStatus;			//会话状态
 	char			m_szClientAddress[enmMaxIPAddressLength];
 	uint32_t		m_nPeerAddress;				//对端ip
 	uint16_t		m_nPeerPort;				//对端port
-	uint32_t		m_nListenAddress;			//监听地址
-	uint16_t		m_nListenPort;				//监听端口
-	uint16_t		m_nBelongPort;				//所属端口(此套接字只在此端口连接上)
+	uint32_t		m_nLocalAddress;			//监听地址
+	uint16_t		m_nLocalPort;				//监听端口
 	time_t			m_nCreateTime;				//连接创建时间
 	time_t			m_nLastRecvTime;			//最近一次从对端接收数据的时间
 	time_t			m_nLastSendTime;			//最近一次发给对端数据的时间
@@ -180,8 +172,7 @@ protected:
 //	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
 	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//发送缓存，在套接字异常或者系统发送缓冲满的情况下，数据将会被放进此缓存
 
-//	TimerIndex		m_nConnectTimerIndex;		//连接超时定时器索引
-	CConnectTimer *m_pSocketTimer;
+	CConnectTimer	*m_pConnectTimer;
 	CNetHandler		*m_pNetHandler;
 	uint32_t		m_nIOEvents;
 };

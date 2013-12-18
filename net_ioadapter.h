@@ -16,15 +16,15 @@ NETEVENT_NAMESPACE_BEGIN
 class CIOHandlerAdapter : public IIOHandler
 {
 public:
-	virtual int32_t OnOpened(IEventHandler *pHandler);
+	virtual int32_t OnOpened(IIOSession *pIoSession);
 
-	virtual int32_t OnRecved(IEventHandler *pHandler, uint8_t *pBuf, uint32_t nBufSize);
+	virtual int32_t OnRecved(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize);
 
-	virtual int32_t OnSent(IEventHandler *pHandler, uint8_t *pBuf, uint32_t nBufSize);
+	virtual int32_t OnSent(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize);
 
-	virtual int32_t OnClosed(IEventHandler *pHandler);
+	virtual int32_t OnClosed(IIOSession *pIoSession);
 
-	virtual int32_t OnError(IEventHandler *pHandler);
+	virtual int32_t OnError(IIOSession *pIoSession);
 };
 
 NETEVENT_NAMESPACE_END

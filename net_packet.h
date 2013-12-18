@@ -10,8 +10,6 @@
 
 #include "net_namespace.h"
 #include "net_typedef.h"
-#include <list>
-using namespace std;
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -21,19 +19,13 @@ public:
 	NetPacket()
 	{
 		m_nNetPacketLen = 0;
-		m_nConnectionID = 0;
-	}
-
-	virtual ~NetPacket()
-	{
+		m_nSessionID = 0;
 	}
 
 	uint32_t 		m_nNetPacketLen;	//不包含自身4字节的长度
-	ConnectionID	m_nConnectionID;	//连接的唯一标示
+	SessionID		m_nSessionID;		//连接的唯一标示
 	uint8_t			m_pNetPacket[0];
 };
-
-typedef list<NetPacket *>	NetPacketList;
 
 NETEVENT_NAMESPACE_END
 

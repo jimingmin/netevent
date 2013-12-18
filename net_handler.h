@@ -46,10 +46,12 @@ public:
 
 	int32_t DeleteEvent(CSocket *pSocket);
 
+	void PushPacket(NetPacket *pPacket);
+
 protected:
 	int32_t MessagePump();
 
-	int32_t SendMessage();
+	int32_t SendPacket();
 
 	int32_t HandleTimeOutEvent();
 

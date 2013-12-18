@@ -8,42 +8,28 @@
 #include "net_connection.h"
 #include "net_handler.h"
 #include "net_eventid.h"
+#include "net_connmgt.h"
+#include "../common/common_memmgt.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
-CConnection::CConnection()
-{
-	m_nConnectionID = 0;
-	m_pPacketParser = NULL;
-	m_pIOHandler = NULL;
-}
-
 CConnection::CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler)
 {
-	m_nConnectionID = 0;
 	m_pNetHandler = pNetHandler;
 	m_pPacketParser = pPacketParser;
 	m_pIOHandler = pIOHandler;
 }
 
-void CConnection::SetConnectionID(ConnectionID nID)
-{
-	m_nConnectionID = nID;
-}
-
-ConnectionID CConnection::GetConnectionID()
-{
-	return m_nConnectionID;
-}
-
 int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 {
-	uint8_t *pMem = new uint8_t[sizeof(NetPacket) + nBufSize];
+	uint8_t *pMem = (uint8_t *)malloc(sizeof(NetPacket) + nBufSize + 1000);//MALLOC(sizeof(NetPacket) + nBufSize);
 
 	NetPacket *pPacket = new(pMem) NetPacket();
 	pPacket->m_nNetPacketLen = nBufSize;
-	pPacket->m_nConnectionID = m_nConnectionID;
-	memcpy(pMem + sizeof(NetPacket), pBuf, nBufSize);
+	pPacket->m_nSessionID = m_nSessionID;
+	memcpy(pPacket->m_pNetPacket, pBuf, nBufSize);
+
+	m_pNetHandler->PushPacket(pPacket);
 
 	return nBufSize;
 }
@@ -115,6 +101,8 @@ int32_t CConnection::OnError(int32_t nErrorCode)
 //连接成功回调(重载此函数，可以在这里做些连接信息初始化的工作)
 int32_t CConnection::OnConnected()
 {
+	g_ConnMgt.RegistConnection(this);
+
 	m_pIOHandler->OnOpened(this);
 
 	return S_OK;
@@ -130,10 +118,9 @@ int32_t CConnection::OnDisconnect(int32_t nCloseCode)
 {
 	m_pIOHandler->OnClosed(this);
 
+	g_ConnMgt.UnregistConnection(this);
+
 	return S_OK;
 }
 
 NETEVENT_NAMESPACE_END
-
-
-

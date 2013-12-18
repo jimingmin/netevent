@@ -69,7 +69,7 @@ int32_t CEpoll::RegistEvent(CSocket *pSocket, uint32_t nEvents)
 	struct epoll_event event;
 	event.data.ptr = (void *)pSocket;
 	event.events = nIOEvents;
-	//�������ǵ�һ�����
+
 	if(pSocket->GetIOEvents() > 0)
 	{
 		if (epoll_ctl(m_nEpollFD, EPOLL_CTL_MOD, pSocket->GetSocketFD(), &event) < 0)
@@ -161,8 +161,8 @@ int32_t CEpoll::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->ReadEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				continue;
 			}
@@ -171,8 +171,8 @@ int32_t CEpoll::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->WriteEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				continue;
 			}
@@ -181,8 +181,8 @@ int32_t CEpoll::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->ErrorEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				continue;
 			}
@@ -191,8 +191,8 @@ int32_t CEpoll::HandleMessage(int32_t nWaitTimeout)
 		{
 			pSocket->ErrorEvent();
 
-			SocketStatus nSocketStatus = pSocket->GetStatus();
-			if((nSocketStatus == enmSocketStatus_Closed) || (nSocketStatus == enmSocketStatus_Error))
+			SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+			if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
 			{
 				continue;
 			}

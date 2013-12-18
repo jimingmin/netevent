@@ -17,13 +17,9 @@ NETEVENT_NAMESPACE_BEGIN
 class CConnection : public CSocket
 {
 public:
-	CConnection();
 	CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler);
 
-	void SetConnectionID(ConnectionID nID);
-	ConnectionID GetConnectionID();
-
-	int32_t Write(uint8_t *pBuf, int32_t nBufSize);
+	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode);
@@ -39,7 +35,6 @@ protected:
 	virtual int32_t OnDisconnect(int32_t nCloseCode);
 
 protected:
-	ConnectionID			m_nConnectionID;
 	IPacketParser			*m_pPacketParser;
 	IIOHandler				*m_pIOHandler;
 };

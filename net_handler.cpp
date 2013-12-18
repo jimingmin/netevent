@@ -98,6 +98,11 @@ int32_t CNetHandler::DeleteEvent(CSocket *pSocket)
 	return m_pReactor->DeleteEvent(pSocket);
 }
 
+void CNetHandler::PushPacket(NetPacket *pPacket)
+{
+	m_stSendQueue.Push(pPacket);
+}
+
 bool CNetHandler::Process()
 {
 	bool bHasData = false;
@@ -115,7 +120,7 @@ bool CNetHandler::Process()
 
 int32_t CNetHandler::MessagePump()
 {
-	int32_t nMessageResult = SendMessage();
+	int32_t nMessageResult = SendPacket();
 
 	int32_t nWaitTimeout = 0;
 	if(nMessageResult == S_FALSE)
@@ -131,7 +136,7 @@ int32_t CNetHandler::MessagePump()
 	return nEventCount;
 }
 
-int32_t CNetHandler::SendMessage()
+int32_t CNetHandler::SendPacket()
 {
 	if(m_stSendQueue.Empty())
 	{
@@ -139,7 +144,7 @@ int32_t CNetHandler::SendMessage()
 	}
 
 	NetPacket *pPacket = m_stSendQueue.Pop();
-	CConnection *pConnection = g_ConnMgt.GetConnection(pPacket->m_nConnectionID);
+	CConnection *pConnection = g_ConnMgt.GetConnection(pPacket->m_nSessionID);
 	if(pConnection == NULL)
 	{
 		return S_FALSE;

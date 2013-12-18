@@ -35,33 +35,25 @@ enum
 };
 #endif
 
-typedef uint32_t		ConnectionID;
+typedef uint32_t		SessionID;
 
 //套接字类型
-typedef enum enmSocketType
+typedef enum enmSessionType
 {
-	enmSocketType_Listen				= 0,		//监听套接字
-	enmSocketType_Communicate			= 1,		//通信套接字
-} SocketType;
-
-//套接字属性
-typedef enum enmSocketAttr
-{
-	enmSocketAttr_Unknown				= 0,		//未知套接字
-	enmSocketAttr_Outside				= 1,		//外部套接字
-	enmSocketAttr_Inside				= 2,		//内部套接字
-} SocketAttr;
+	enmSessionType_Listen				= 0,		//监听套接字
+	enmSessionType_Communicate			= 1,		//通信套接字
+} SessionType;
 
 //套接字连接状态
-typedef enum enmSocketStatus
+typedef enum enmSessionStatus
 {
-	enmSocketStatus_Closed				= 0,		//
-	enmSocketStatus_Opened				= 1,
-	enmSocketStatus_Connecting			= 2,
-	enmSocketStatus_Connected			= 3,
-	enmSocketStatus_Error				= 4,
-	enmSocketStatus_Available			= 5,
-} SocketStatus;
+	enmSessionStatus_Closed				= 0,		//
+	enmSessionStatus_Opened				= 1,
+	enmSessionStatus_Connecting			= 2,
+	enmSessionStatus_Connected			= 3,
+	enmSessionStatus_Error				= 4,
+	enmSessionStatus_Available			= 5,
+} SessionStatus;
 
 enum
 {

@@ -18,21 +18,21 @@ using namespace std;
 
 NETEVENT_NAMESPACE_BEGIN
 
-typedef map<ConnectionID, CConnection *>	ConnMap;
+typedef map<SessionID, CConnection *>	ConnMap;
 
 class CConnMgt
 {
 public:
 	void RegistConnection(CConnection *pConn);
 
-	CConnection *GetConnection(ConnectionID nID);
+	CConnection *GetConnection(SessionID nID);
 
-	void UnregistConnection(ConnectionID nID);
+	void UnregistConnection(SessionID nID);
 
 	void UnregistConnection(CConnection *pConn);
 
 protected:
-	static ConnectionID			g_nConnectionID;
+	static SessionID			g_nConnectionID;
 	ConnMap						m_stUsedConnMap;
 };
 

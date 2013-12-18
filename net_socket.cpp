@@ -33,6 +33,17 @@ CSocket::~CSocket()
 	}
 }
 
+//设置会话ID,全局唯一
+void CSocket::SetSessionID(SessionID nID)
+{
+	m_nSessionID = nID;
+}
+//获取会话ID,全局唯一
+SessionID CSocket::GetSessionID()
+{
+	return m_nSessionID;
+}
+
 //设置套接字描述符
 void CSocket::SetSocketFD(SocketFD nSocketFD)
 {
@@ -46,35 +57,25 @@ SocketFD CSocket::GetSocketFD() const
 }
 
 //设置套接字状态
-void CSocket::SetSocketStatus(SocketStatus nSocketStatus)
+void CSocket::SetSessionStatus(SessionStatus nSocketStatus)
 {
-	m_nSocketStatus = nSocketStatus;
+	m_nSessionStatus = nSocketStatus;
 }
 
 //获取套接字状态
-SocketStatus CSocket::GetStatus() const
+SessionStatus CSocket::GetSessionStatus() const
 {
-	return m_nSocketStatus;
+	return m_nSessionStatus;
 }
 
-void CSocket::SetSocketType(SocketType nSocketType)
+void CSocket::SetSessionType(SessionType nSocketType)
 {
-	m_nSocketType = nSocketType;
+	m_nSessionType = nSocketType;
 }
 
-SocketType CSocket::GetSocketType()
+SessionType CSocket::GetSessionType()
 {
-	return m_nSocketType;
-}
-
-void CSocket::SetSocketAttr(SocketAttr nSocketAttr)
-{
-	m_nSocketAttr = nSocketAttr;
-}
-
-SocketAttr CSocket::GetSocketAttr()
-{
-	return m_nSocketAttr;
+	return m_nSessionType;
 }
 
 char *CSocket::GetPeerAddressStr()
@@ -113,24 +114,14 @@ uint16_t CSocket::GetPeerPort()
 	return m_nPeerPort;
 }
 
-uint32_t CSocket::GetListenAddress()
+uint32_t CSocket::GetLocalAddress()
 {
-	return m_nListenAddress;
+	return m_nLocalAddress;
 }
 
-uint16_t CSocket::GetListenPort()
+uint16_t CSocket::GetLocalPort()
 {
-	return m_nListenPort;
-}
-
-void CSocket::SetBelongPort(uint16_t nPort)
-{
-	m_nBelongPort = nPort;
-}
-
-uint16_t CSocket::GetBelongPort()
-{
-	return m_nBelongPort;
+	return m_nLocalPort;
 }
 
 void CSocket::SetCreateTime(time_t nCreateTime)
@@ -144,14 +135,14 @@ void CSocket::SetNetHandler(CNetHandler *pNetHandler)
 }
 
 
-void CSocket::SetSocketTimer(CConnectTimer *pTimer)
+void CSocket::SetConnectTimer(CConnectTimer *pTimer)
 {
-	m_pSocketTimer = pTimer;
+	m_pConnectTimer = pTimer;
 }
 
-CConnectTimer *CSocket::GetSocketTimer()
+CConnectTimer *CSocket::GetSessionTimer()
 {
-	return m_pSocketTimer;
+	return m_pConnectTimer;
 }
 
 int32_t CSocket::ReadEvent()
@@ -159,7 +150,7 @@ int32_t CSocket::ReadEvent()
 	int32_t nRet = S_OK;
 
 	//是监听套接字的读事件
-	if(enmSocketType_Listen == m_nSocketType)
+	if(enmSessionType_Listen == m_nSessionType)
 	{
 		struct sockaddr_in stPeerAddress;
 		socklen_t nPeerAddressLen = (socklen_t)sizeof(stPeerAddress);
@@ -208,7 +199,7 @@ int32_t CSocket::WriteEvent()
 		nError = 0;
 	}
 
-	if(m_nSocketStatus == enmSocketStatus_Connecting)
+	if(m_nSessionStatus == enmSessionStatus_Connecting)
 	{
 		int32_t nError = 0;
 //		socklen_t nLen = sizeof(int32_t);
@@ -224,9 +215,9 @@ int32_t CSocket::WriteEvent()
 
 int32_t CSocket::ErrorEvent()
 {
-	if((m_nSocketStatus == enmSocketStatus_Closed) ||
-			(m_nSocketStatus == enmSocketStatus_Opened) ||
-			(m_nSocketStatus == enmSocketStatus_Error))
+	if((m_nSessionStatus == enmSessionStatus_Closed) ||
+			(m_nSessionStatus == enmSessionStatus_Opened) ||
+			(m_nSessionStatus == enmSessionStatus_Error))
 	{
 		return S_OK;
 	}
@@ -240,6 +231,11 @@ int32_t CSocket::ErrorEvent()
 	}
 
 	return OnError(nError);
+}
+
+int32_t CSocket::Write(uint8_t *pBuf, int32_t nBufSize)
+{
+	return 0;
 }
 
 //接收连接回调(重载此函数，可以在这里做些连接信息初始化的工作)
@@ -316,7 +312,7 @@ int32_t CSocket::OpenSocket()
 	}
 
 	set_non_block(m_nSocketFD);
-	m_nSocketStatus = enmSocketStatus_Opened;
+	m_nSessionStatus = enmSessionStatus_Opened;
 
 	return S_OK;
 }
@@ -327,11 +323,11 @@ void CSocket::CloseSocket(int32_t nCloseCode)
 {
 	if (enmInvalidSocketFD != m_nSocketFD)
 	{
-		if(m_nSocketStatus != enmSocketStatus_Closed)
+		if(m_nSessionStatus != enmSessionStatus_Closed)
 		{
 			Disconnected(nCloseCode);
 			//更新套接字状态
-			m_nSocketStatus = enmSocketStatus_Closed;
+			m_nSessionStatus = enmSessionStatus_Closed;
 		}
 		close(m_nSocketFD);
 		m_nSocketFD = enmInvalidSocketFD;
@@ -349,13 +345,13 @@ int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 	}
 
 	//判断套接字类型
-	if (enmSocketType_Communicate != m_nSocketType)
+	if (enmSessionType_Communicate != m_nSessionType)
 	{
 		return E_SOCKETTYPE;
 	}
 
 	//套接字是否打开
-	if ((enmInvalidSocketFD == m_nSocketFD) || (enmSocketStatus_Opened != m_nSocketStatus))
+	if ((enmInvalidSocketFD == m_nSocketFD) || (enmSessionStatus_Opened != m_nSessionStatus))
 	{
 		return E_SOCKETNOTCREATED;
 	}
@@ -370,9 +366,9 @@ int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 	addr.sin_addr.s_addr = inet_addr(szRemoteIP);
 	addr.sin_port = htons(nPort);
 
-	m_pSocketTimer = g_ConnectTimerMgt.CreateConnectTimer(this,
+	m_pConnectTimer = g_ConnectTimerMgt.CreateConnectTimer(this,
 			static_cast<ConnectTimerProc>(&CSocket::OnTimerEvent), 3);
-	if(m_pSocketTimer == NULL)
+	if(m_pConnectTimer == NULL)
 	{
 		return E_UNKNOWN;
 	}
@@ -391,7 +387,7 @@ int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 			//添加peer端与此socket对象的映射
 			//g_FrameSocketMgt.AddSocket(m_nPeerType, m_nPeerID, this);
 
-			m_nSocketStatus = enmSocketStatus_Connecting;
+			m_nSessionStatus = enmSessionStatus_Connecting;
 			return E_SOCKET_CONNECTING;
 		}
 	}
@@ -400,7 +396,7 @@ int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 	//g_FrameSocketMgt.AddSocket(m_nPeerType, m_nPeerID, this);
 
 	//更新套接字状态
-	m_nSocketStatus = enmSocketStatus_Connected;
+	m_nSessionStatus = enmSessionStatus_Connected;
 
 	Connected();
 
@@ -416,20 +412,20 @@ int32_t CSocket::OnTimerEvent(CConnectTimer *pTimer)
 //连接超时
 int32_t CSocket::ConnectTimeout()
 {
-	if(m_pSocketTimer != NULL)
+	if(m_pConnectTimer != NULL)
 	{
-		g_ConnectTimerMgt.DestroyConnectTimer(m_pSocketTimer);
-		m_pSocketTimer = NULL;
+		g_ConnectTimerMgt.DestroyConnectTimer(m_pConnectTimer);
+		m_pConnectTimer = NULL;
 	}
 
 	//多次发送连接请求的情况下，可能某一次连接成功了，另外一些连接请求超时
-	if((m_nSocketStatus == enmSocketStatus_Connected) ||
-				(m_nSocketStatus == enmSocketStatus_Available))
+	if((m_nSessionStatus == enmSessionStatus_Connected) ||
+				(m_nSessionStatus == enmSessionStatus_Available))
 	{
 		return S_OK;
 	}
 
-	m_nSocketStatus = enmSocketStatus_Closed;
+	m_nSessionStatus = enmSessionStatus_Closed;
 
 	if(m_pNetHandler != NULL)
 	{
@@ -442,16 +438,16 @@ int32_t CSocket::ConnectTimeout()
 //连接成功的回调
 int32_t CSocket::Connected()
 {
-	if(m_pSocketTimer != NULL)
+	if(m_pConnectTimer != NULL)
 	{
-		g_ConnectTimerMgt.DestroyConnectTimer(m_pSocketTimer);
-		m_pSocketTimer = NULL;
+		g_ConnectTimerMgt.DestroyConnectTimer(m_pConnectTimer);
+		m_pConnectTimer = NULL;
 	}
 
-	if((m_nSocketStatus != enmSocketStatus_Connected) &&
-			(m_nSocketStatus != enmSocketStatus_Available))
+	if((m_nSessionStatus != enmSessionStatus_Connected) &&
+			(m_nSessionStatus != enmSessionStatus_Available))
 	{
-		m_nSocketStatus = enmSocketStatus_Connected;
+		m_nSessionStatus = enmSessionStatus_Connected;
 	}
 
 	sockaddr_in stLocalAddr;
@@ -482,10 +478,10 @@ int32_t CSocket::Connected()
 //连接成功的回调
 int32_t CSocket::Disconnected(int32_t nCloseCode)
 {
-	if(m_pSocketTimer != NULL)
+	if(m_pConnectTimer != NULL)
 	{
-		g_ConnectTimerMgt.DestroyConnectTimer(m_pSocketTimer);
-		m_pSocketTimer = NULL;
+		g_ConnectTimerMgt.DestroyConnectTimer(m_pConnectTimer);
+		m_pConnectTimer = NULL;
 	}
 
 	return OnDisconnect(nCloseCode);
@@ -502,7 +498,7 @@ int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 		return E_SOCKETNOTCREATED;
 	}
 
-	if((enmSocketStatus_Available != m_nSocketStatus)&&(enmSocketStatus_Connected != m_nSocketStatus))
+	if((enmSessionStatus_Available != m_nSessionStatus)&&(enmSessionStatus_Connected != m_nSessionStatus))
 	{
 		struct sockaddr_in sa;
 		socklen_t nLen = sizeof(sa);
@@ -560,7 +556,7 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 		return E_SOCKETNOTCREATED;
 	}
 
-	if((enmSocketStatus_Available != m_nSocketStatus)&&(enmSocketStatus_Connected != m_nSocketStatus))
+	if((enmSessionStatus_Available != m_nSessionStatus)&&(enmSessionStatus_Connected != m_nSessionStatus))
 	{
 		struct sockaddr_in sa;
 		socklen_t nLen = sizeof(sa);
@@ -656,7 +652,7 @@ int32_t CSocket::nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose
 	}
 
 	//套接字是否打开
-	if ((enmInvalidSocketFD == m_nSocketFD) || ((enmSocketStatus_Available != m_nSocketStatus)&&(enmSocketStatus_Connected != m_nSocketStatus)))
+	if ((enmInvalidSocketFD == m_nSocketFD) || ((enmSessionStatus_Available != m_nSessionStatus)&&(enmSessionStatus_Connected != m_nSessionStatus)))
 	{
 		return nReadBytes;
 	}
@@ -699,7 +695,7 @@ int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 	}
 
 	//套接字是否打开
-	if ((enmInvalidSocketFD == m_nSocketFD) || ((enmSocketStatus_Available != m_nSocketStatus)&&(enmSocketStatus_Connected != m_nSocketStatus)))
+	if ((enmInvalidSocketFD == m_nSocketFD) || ((enmSessionStatus_Available != m_nSessionStatus)&&(enmSessionStatus_Connected != m_nSessionStatus)))
 	{
 		return nWriteBytes;
 	}

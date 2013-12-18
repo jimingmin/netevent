@@ -8,6 +8,7 @@
 #include "net_acceptor.h"
 #include "net_handler.h"
 #include "net_connection.h"
+#include "net_connmgt.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -22,7 +23,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 {
 	OpenSocket();
 
-	if((m_nSocketType == enmSocketType_Listen) || (nPort > 0))
+	if((m_nSessionType == enmSessionType_Listen) || (nPort > 0))
 	{
 		//设置套接字属性
 		int32_t op = 1;
@@ -60,8 +61,8 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 			return E_SOCKETLISTEN;
 		}
 
-		m_nListenAddress = addr.sin_addr.s_addr;
-		m_nListenPort = nPort;
+		m_nLocalAddress = addr.sin_addr.s_addr;
+		m_nLocalPort = nPort;
 
 		m_pNetHandler->RegistEvent(this, mask_read);
 	}
@@ -70,8 +71,8 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 	set_non_block(m_nSocketFD);
 
 	//更新套接字类型和状态
-	m_nSocketType = enmSocketType_Listen;
-	m_nSocketStatus = enmSocketStatus_Opened;
+	m_nSessionType = enmSessionType_Listen;
+	m_nSessionStatus = enmSessionStatus_Opened;
 
 	return S_OK;
 }
@@ -104,19 +105,20 @@ int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress
 		socklen_t nPeerAddressLen)
 {
 	IPacketParser *pPacketParser = m_pPacketParserFactory->Create();
-	CSocket *pSocket = new CConnection(m_pNetHandler, pPacketParser, m_pIOHandler);
+	CConnection *pConnection = new CConnection(m_pNetHandler, pPacketParser, m_pIOHandler);
 
-	pSocket->Clear();
-	pSocket->SetSocketFD(nAcceptFD);
-	pSocket->SetSocketStatus(enmSocketStatus_Connected);
-	pSocket->SetPeerAddress((uint32_t)stPeerAddress.sin_addr.s_addr);
-	pSocket->SetPeerPort(stPeerAddress.sin_port);
-	pSocket->SetCreateTime(time(NULL));
+	pConnection->SetSocketFD(nAcceptFD);
+	pConnection->SetSessionStatus(enmSessionStatus_Connected);
+	pConnection->SetPeerAddress((uint32_t)stPeerAddress.sin_addr.s_addr);
+	pConnection->SetPeerPort(stPeerAddress.sin_port);
+	pConnection->SetCreateTime(time(NULL));
 
 	set_non_block(nAcceptFD);
 
-	m_pNetHandler->RegistEvent(pSocket, mask_read | mask_write);
-	m_pIOHandler->OnOpened(pSocket);
+	m_pNetHandler->RegistEvent(pConnection, mask_read | mask_write);
+	m_pIOHandler->OnOpened(pConnection);
+
+	g_ConnMgt.RegistConnection(pConnection);
 
 	return S_OK;
 }

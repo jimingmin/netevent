@@ -9,7 +9,7 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-ConnectionID CConnMgt::g_nConnectionID = 0;
+SessionID CConnMgt::g_nConnectionID = 0;
 
 void CConnMgt::RegistConnection(CConnection *pConn)
 {
@@ -18,12 +18,12 @@ void CConnMgt::RegistConnection(CConnection *pConn)
 		return;
 	}
 
-	ConnectionID nID = ++g_nConnectionID;
+	SessionID nID = ++g_nConnectionID;
 	m_stUsedConnMap[nID] = pConn;
-	pConn->SetConnectionID(nID);
+	pConn->SetSessionID(nID);
 }
 
-CConnection *CConnMgt::GetConnection(ConnectionID nID)
+CConnection *CConnMgt::GetConnection(SessionID nID)
 {
 	CConnection *pConn = NULL;
 	ConnMap::iterator it = m_stUsedConnMap.find(nID);
@@ -35,7 +35,7 @@ CConnection *CConnMgt::GetConnection(ConnectionID nID)
 	return pConn;
 }
 
-void CConnMgt::UnregistConnection(ConnectionID nID)
+void CConnMgt::UnregistConnection(SessionID nID)
 {
 	m_stUsedConnMap.erase(nID);
 }
@@ -47,7 +47,7 @@ void CConnMgt::UnregistConnection(CConnection *pConn)
 		return;
 	}
 
-	ConnectionID nID = pConn->GetConnectionID();
+	SessionID nID = pConn->GetSessionID();
 	m_stUsedConnMap.erase(nID);
 }
 

@@ -41,17 +41,17 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort)
 	pSocket->OpenSocket();
 
 	//更新套接字类型和状态
-	pSocket->SetSocketType(enmSocketType_Communicate);
+	pSocket->SetSessionType(enmSessionType_Communicate);
 
 	//判断套接字类型
-	if (enmSocketType_Communicate != pSocket->GetSocketType())
+	if (enmSessionType_Communicate != pSocket->GetSessionType())
 	{
 		m_pPacketParserFactory->Destory(pPacketParser);
 		return E_SOCKETTYPE;
 	}
 
 	//套接字是否打开
-	if ((enmInvalidSocketFD == pSocket->GetSocketFD()) || (enmSocketStatus_Opened != pSocket->GetStatus()))
+	if ((enmInvalidSocketFD == pSocket->GetSocketFD()) || (enmSessionStatus_Opened != pSocket->GetSessionStatus()))
 	{
 		m_pPacketParserFactory->Destory(pPacketParser);
 		return E_SOCKETNOTCREATED;
@@ -75,7 +75,7 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort)
 		return E_UNKNOWN;
 	}
 
-	pSocket->SetSocketTimer(pConnTimer);
+	pSocket->SetConnectTimer(pConnTimer);
 
 	//与服务器端建立连接
 	int32_t ret = connect(pSocket->GetSocketFD(), (const struct sockaddr*)&addr, sizeof(addr));
@@ -90,14 +90,14 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort)
 		else
 		{
 			m_pNetHandler->RegistEvent(pSocket, mask_read | mask_write);
-			pSocket->SetSocketStatus(enmSocketStatus_Connecting);
+			pSocket->SetSessionStatus(enmSessionStatus_Connecting);
 			return E_SOCKET_CONNECTING;
 		}
 	}
 
 	m_pNetHandler->RegistEvent(pSocket, mask_read | mask_write);
 	//更新套接字状态
-	pSocket->SetSocketStatus(enmSocketStatus_Connected);
+	pSocket->SetSessionStatus(enmSessionStatus_Connected);
 	return S_OK;
 }
 
