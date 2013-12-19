@@ -7,10 +7,10 @@
 
 #include "net_connector.h"
 #include "net_typedef.h"
-#include "net_errordef.h"
 #include "net_timer.h"
 #include "net_handler.h"
 #include "net_connection.h"
+#include "net_errordef.h"
 
 #include <errno.h>
 
