@@ -10,10 +10,11 @@
 
 #include "net_namespace.h"
 #include "net_packet.h"
+#include "../common/common_object.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
-class IIOSession
+class IIOSession : public CObject
 {
 public:
 	virtual ~IIOSession(){};
