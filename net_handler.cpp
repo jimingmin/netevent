@@ -104,7 +104,7 @@ void CNetHandler::PushPacket(NetPacket *pPacket)
 	m_stSendQueue.Push(pPacket);
 }
 
-bool CNetHandler::Process()
+int32_t CNetHandler::Run()
 {
 	bool bHasData = false;
 

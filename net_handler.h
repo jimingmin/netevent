@@ -14,6 +14,7 @@
 #include "net_socket.h"
 #include "net_epoll.h"
 #include "net_queue.h"
+#include "../common/common_runnable.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -26,7 +27,7 @@ enum
 };
 
 
-class CNetHandler
+class CNetHandler : public IRunnable
 {
 public:
 	CNetHandler();
@@ -36,7 +37,7 @@ public:
 
 	int32_t DestoryReactor();
 
-	bool Process();
+	int32_t Run();
 
 	IReactor *GetReactor();
 

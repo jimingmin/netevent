@@ -61,7 +61,7 @@ public:
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize) = 0;
 };
 
-class IPacketParser
+class IPacketParser : public CObject
 {
 public:
 	virtual ~IPacketParser(){};
