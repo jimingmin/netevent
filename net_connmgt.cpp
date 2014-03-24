@@ -6,10 +6,52 @@
  */
 
 #include "net_connmgt.h"
+#include "../common/common_memmgt.h"
+
+#include <list>
+using namespace std;
 
 NETEVENT_NAMESPACE_BEGIN
 
 SessionID CConnMgt::g_nConnectionID = 0;
+
+CConnection *CConnMgt::CreateConnection(CNetHandler *pNetHandler, IPacketParserFactory *pPacketParserFactory, IIOHandler *pIOHandler)
+{
+	CConnection *pConn = NULL;
+	if(m_stUnusedConnList.empty())
+	{
+		uint8_t *pMem = MALLOC(sizeof(CConnection));
+		if(pMem != NULL)
+		{
+			IPacketParser *pPacketParser = pPacketParserFactory->Create();
+			pConn = new(pMem) CConnection(pNetHandler, pPacketParser, pIOHandler);
+		}
+	}
+	else
+	{
+		pConn = m_stUnusedConnList.front();
+		m_stUnusedConnList.pop_front();
+
+		pConn->SetNetHandler(pNetHandler);
+		pConn->SetPacketParser(pPacketParserFactory->Create());
+		pConn->SetIOHandler(pIOHandler);
+	}
+
+	m_stParserConnMap[pConn] = pPacketParserFactory;
+
+	return pConn;
+}
+
+void CConnMgt::DestroyConnection(CConnection *pConn)
+{
+	ParserConnMap::iterator it = m_stParserConnMap.find(pConn);
+	if(it != m_stParserConnMap.end())
+	{
+		m_stParserConnMap[pConn]->Destory(pConn->GetPacketParser());
+		m_stParserConnMap.erase(it);
+	}
+	m_stUnusedConnList.push_back(pConn);
+}
 
 void CConnMgt::RegistConnection(CConnection *pConn)
 {
@@ -35,20 +77,31 @@ CConnection *CConnMgt::GetConnection(SessionID nID)
 	return pConn;
 }
 
-void CConnMgt::UnregistConnection(SessionID nID)
+bool CConnMgt::UnregistConnection(SessionID nID)
 {
-	m_stUsedConnMap.erase(nID);
+	return m_stUsedConnMap.erase(nID) > 0;
 }
 
-void CConnMgt::UnregistConnection(CConnection *pConn)
+bool CConnMgt::UnregistConnection(CConnection *pConn)
 {
 	if(pConn == NULL)
 	{
-		return;
+		return false;
 	}
 
 	SessionID nID = pConn->GetSessionID();
-	m_stUsedConnMap.erase(nID);
+	return m_stUsedConnMap.erase(nID) > 0;
+}
+
+list<CConnection *> CConnMgt::GetConnList()
+{
+	list<CConnection *> stConnList;
+	ConnMap::iterator it = m_stUsedConnMap.begin();
+	for(; it != m_stUsedConnMap.end(); ++it)
+	{
+		stConnList.push_back(it->second);
+	}
+	return stConnList;
 }
 
 NETEVENT_NAMESPACE_END

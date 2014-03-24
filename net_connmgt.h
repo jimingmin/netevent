@@ -19,21 +19,32 @@ using namespace std;
 NETEVENT_NAMESPACE_BEGIN
 
 typedef map<SessionID, CConnection *>	ConnMap;
+typedef list<CConnection *>		UnusedConnList;
+typedef map<CConnection *, IPacketParserFactory *>	ParserConnMap;
 
 class CConnMgt
 {
 public:
+	CConnection *CreateConnection(CNetHandler *pNetHandler, IPacketParserFactory *pPacketParserFactory, IIOHandler *pIOHandler);
+
+	void DestroyConnection(CConnection *pConn);
+
 	void RegistConnection(CConnection *pConn);
 
 	CConnection *GetConnection(SessionID nID);
 
-	void UnregistConnection(SessionID nID);
+	bool UnregistConnection(SessionID nID);
 
-	void UnregistConnection(CConnection *pConn);
+	bool UnregistConnection(CConnection *pConn);
+
+	list<CConnection *> GetConnList();
 
 protected:
 	static SessionID			g_nConnectionID;
 	ConnMap						m_stUsedConnMap;
+	IPacketParserFactory		*m_pPacketParserFactory;
+	UnusedConnList				m_stUnusedConnList;
+	ParserConnMap				m_stParserConnMap;
 };
 
 #define g_ConnMgt			CSingleton<CConnMgt>::GetInstance()
