@@ -59,6 +59,16 @@ public:
 	virtual int32_t ErrorEvent() = 0;
 
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize) = 0;
+
+	virtual int32_t Open() = 0;
+	//关闭套接字
+	virtual void Close(int32_t nCloseCode = 0) = 0;
+	//与服务端建立连接
+	virtual int32_t Connect(const char* szRemoteIP, uint16_t nPort) = 0;
+	//接收数据
+	virtual int32_t Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes) = 0;
+	//发送数据
+	virtual int32_t Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nSendBytes) = 0;
 };
 
 class IPacketParser : public CObject
@@ -68,7 +78,7 @@ public:
 
 	virtual void InputData(uint8_t *pBuf, int32_t nSize) = 0;
 
-	virtual NetPacket *Parser() = 0;
+	virtual int32_t Parser(uint8_t arrPacket[], int32_t &nPacketSize) = 0;
 };
 
 class IPacketParserFactory
