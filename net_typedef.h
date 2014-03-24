@@ -73,6 +73,7 @@ enum
 {
 	enmMaxMessageSize					= 0x40000,	//最大消息长度, 1024*256, 256k
 	enmMaxIPAddressLength				= 20,	//IP地址最大长度
+	enmWaitTimeout						= 50,	//50(ms)
 };
 
 
