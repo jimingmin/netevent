@@ -20,14 +20,49 @@ CConnection::CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser,
 	m_pIOHandler = pIOHandler;
 }
 
+void CConnection::SetPacketParser(IPacketParser *pPacketParser)
+{
+	m_pPacketParser = pPacketParser;
+}
+
+IPacketParser *CConnection::GetPacketParser()
+{
+	return m_pPacketParser;
+}
+
+void CConnection::SetIOHandler(IIOHandler *pIOHandler)
+{
+	m_pIOHandler = pIOHandler;
+}
+
+IIOHandler *CConnection::GetIOHandler()
+{
+	return m_pIOHandler;
+}
+
+void CConnection::Close(int32_t nCloseCode)
+{
+	if(g_ConnMgt.UnregistConnection(this))
+	{
+		g_ConnMgt.DestroyConnection(this);
+
+		CSocket::Close(nCloseCode);
+
+		m_pNetHandler = NULL;
+		m_pPacketParser = NULL;
+		m_pIOHandler = NULL;
+	}
+}
+
 int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 {
-	uint8_t *pMem = MALLOC(sizeof(NetPacket) + nBufSize);
+	uint8_t *pMem = MALLOC(sizeof(NetPacket) + nBufSize + 1);
 
 	NetPacket *pPacket = new(pMem) NetPacket();
-	pPacket->m_nNetPacketLen = nBufSize;
+	pPacket->m_nNetPacketLen = nBufSize + 1;
 	pPacket->m_nSessionID = m_nSessionID;
 	memcpy(pPacket->m_pNetPacket, pBuf, nBufSize);
+	pPacket->m_pNetPacket[nBufSize] = '\0';//主要是针对消息是字符串的包，增加安全性
 
 	m_pNetHandler->PushPacket(pPacket);
 
@@ -54,22 +89,31 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 		nCloseCode = nRet;
 	}
 
-	m_pPacketParser->InputData(arrBuf, nRecvBytes);
-
-	//提取消息包
-	NetPacket *pNetPacket = NULL;
-	do
+	if(nRecvBytes > 0)
 	{
-		pNetPacket = m_pPacketParser->Parser();
-		if(pNetPacket != NULL)
+		m_pPacketParser->InputData(arrBuf, nRecvBytes);
+		//提取消息包
+		do
 		{
-			m_pIOHandler->OnRecved(this, pNetPacket->m_pNetPacket, pNetPacket->m_nNetPacketLen);
-		}
-	}while(pNetPacket != NULL);
+			int32_t nPacketSize = 0;
+			uint8_t arrPacket[enmMaxMessageSize];
+			m_pPacketParser->Parser(arrPacket, nPacketSize);
+			if(nPacketSize <= 0)
+			{
+				break;
+			}
+
+			m_pIOHandler->OnRecved(this, arrPacket, nPacketSize);
+			if(m_nSessionStatus != enmSessionStatus_Connected)
+			{
+				return S_OK;
+			}
+		}while(true);
+	}
 
 	if(nCloseCode != 0)
 	{
-		CloseSocket(nCloseCode);
+		Close(nCloseCode);
 		return E_SOCKETERROR;
 	}
 
@@ -81,14 +125,14 @@ int32_t CConnection::OnWrite(int32_t nErrorCode)
 {
 	if(nErrorCode != 0)
 	{
-		CloseSocket(SYS_EVENT_CONN_ERROR);
+		Close(SYS_EVENT_CONN_ERROR);
 		return E_SOCKETERROR;
 	}
 
 	int32_t nRet = SendRestData();
 	if(nRet < 0)
 	{
-		CloseSocket(SYS_EVENT_CONN_ERROR);
+		Close(SYS_EVENT_CONN_ERROR);
 		return E_SOCKETERROR;
 	}
 
@@ -123,9 +167,8 @@ int32_t CConnection::OnConnectTimeout()
 //断开连接回调(重载此函数，可以在这里做些资源回收的工作)
 int32_t CConnection::OnDisconnect(int32_t nCloseCode)
 {
+	m_pNetHandler->DeleteEvent(this);
 	m_pIOHandler->OnClosed(this);
-
-	g_ConnMgt.UnregistConnection(this);
 
 	return S_OK;
 }
