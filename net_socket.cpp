@@ -29,7 +29,7 @@ CSocket::~CSocket()
 {
 	if (enmInvalidSocketFD != m_nSocketFD)
 	{
-		CloseSocket(SYS_EVENT_CONN_CONFLICT);
+		Close(SYS_EVENT_CONN_CONFLICT);
 	}
 }
 
@@ -114,9 +114,19 @@ uint16_t CSocket::GetPeerPort()
 	return m_nPeerPort;
 }
 
+void CSocket::SetLocalAddress(uint32_t nAddress)
+{
+	m_nLocalAddress = nAddress;
+}
+
 uint32_t CSocket::GetLocalAddress()
 {
 	return m_nLocalAddress;
+}
+
+void CSocket::SetLocalPort(uint16_t nPort)
+{
+	m_nLocalPort = nPort;
 }
 
 uint16_t CSocket::GetLocalPort()
@@ -288,6 +298,7 @@ int32_t CSocket::SendRestData()
 			{
 				nSendBytes = -1;
 				//break;
+				Close();
 			}
 		}
 	}
@@ -296,12 +307,12 @@ int32_t CSocket::SendRestData()
 	return nSendBytes;
 }
 
-int32_t CSocket::OpenSocket()
+int32_t CSocket::Open()
 {
 	//若socket连接已存在则先关闭套接字
 	if (enmInvalidSocketFD != m_nSocketFD)
 	{
-		CloseSocket(SYS_EVENT_CONN_CONFLICT);
+		Close(SYS_EVENT_CONN_CONFLICT);
 	}
 
 	//打开套接字
@@ -319,7 +330,7 @@ int32_t CSocket::OpenSocket()
 
 
 //关闭套接字
-void CSocket::CloseSocket(int32_t nCloseCode)
+void CSocket::Close(int32_t nCloseCode)
 {
 	if (enmInvalidSocketFD != m_nSocketFD)
 	{
@@ -339,67 +350,6 @@ void CSocket::CloseSocket(int32_t nCloseCode)
 //与服务端建立连接
 int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 {
-	if (NULL == szRemoteIP)
-	{
-		return E_REMOTEIP;
-	}
-
-	//判断套接字类型
-	if (enmSessionType_Communicate != m_nSessionType)
-	{
-		return E_SOCKETTYPE;
-	}
-
-	//套接字是否打开
-	if ((enmInvalidSocketFD == m_nSocketFD) || (enmSessionStatus_Opened != m_nSessionStatus))
-	{
-		return E_SOCKETNOTCREATED;
-	}
-
-	strcpy(m_szClientAddress, szRemoteIP);
-	m_nPeerPort = nPort;
-	m_nPeerAddress = (uint32_t)inet_addr(szRemoteIP);
-
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(szRemoteIP);
-	addr.sin_port = htons(nPort);
-
-	m_pConnectTimer = g_ConnectTimerMgt.CreateConnectTimer(this,
-			static_cast<ConnectTimerProc>(&CSocket::OnTimerEvent), 3);
-	if(m_pConnectTimer == NULL)
-	{
-		return E_UNKNOWN;
-	}
-
-	//与服务器端建立连接
-	int32_t ret = connect(m_nSocketFD, (const struct sockaddr*)&addr, sizeof(addr));
-	if (0 != ret)
-	{
-		if (errno != EINPROGRESS)
-		{
-			CloseSocket();
-			return E_SOCKETCONNECT;
-		}
-		else
-		{
-			//添加peer端与此socket对象的映射
-			//g_FrameSocketMgt.AddSocket(m_nPeerType, m_nPeerID, this);
-
-			m_nSessionStatus = enmSessionStatus_Connecting;
-			return E_SOCKET_CONNECTING;
-		}
-	}
-
-	//添加peer端与此socket对象的映射
-	//g_FrameSocketMgt.AddSocket(m_nPeerType, m_nPeerID, this);
-
-	//更新套接字状态
-	m_nSessionStatus = enmSessionStatus_Connected;
-
-	Connected();
-
 	return S_OK;
 }
 
@@ -457,7 +407,7 @@ int32_t CSocket::Connected()
 	int32_t nRet = getsockname(m_nSocketFD, (sockaddr *)&stLocalAddr, (socklen_t *)&nAddrLen);
 	if(nRet != 0)
 	{
-		CloseSocket(SYS_EVENT_CONN_CONFLICT);
+		Close(SYS_EVENT_CONN_CONFLICT);
 
 		return S_OK;
 	}
@@ -467,10 +417,13 @@ int32_t CSocket::Connected()
 				(strcmp(m_szClientAddress, inet_ntoa(stLocalAddr.sin_addr)) == 0)) &&
 				(stLocalAddr.sin_port == htons(m_nPeerPort)))
 	{
-		CloseSocket(SYS_EVENT_CONN_CONFLICT);
+		Close(SYS_EVENT_CONN_CONFLICT);
 
 		return S_OK;
 	}
+
+	m_nLocalAddress = stLocalAddr.sin_addr.s_addr;
+	m_nLocalPort = stLocalAddr.sin_port;
 
 	return OnConnected();
 }

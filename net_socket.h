@@ -47,11 +47,14 @@ public:
 		memset(m_szClientAddress, 0, sizeof(m_szClientAddress));
 		m_nPeerAddress = 0;
 		m_nPeerPort = 0;
+		m_nLocalAddress = 0;
+		m_nLocalPort = 0;
 		m_nCreateTime = 0;
 		m_nTotalRecvBytes = 0;
 		m_nLastRecvTime = 0;
 		m_nTotalSendBytes = 0;
 		m_nLastSendTime = 0;
+		m_stSendBuffer.Reset();
 		m_pConnectTimer = NULL;
 		m_pNetHandler = NULL;
 		m_nIOEvents = 0;
@@ -84,8 +87,10 @@ public:
 	virtual void SetPeerPort(uint16_t nPort);
 	//获取远端端口
 	virtual uint16_t GetPeerPort();
+	virtual void SetLocalAddress(uint32_t nAddress);
 	//获取本地地址
 	virtual uint32_t GetLocalAddress();
+	virtual void SetLocalPort(uint16_t nPort);
 	//获取本地端口
 	virtual uint16_t GetLocalPort();
 
@@ -97,9 +102,9 @@ public:
 
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
 
-	virtual int32_t OpenSocket();
+	virtual int32_t Open();
 	//关闭套接字
-	virtual void CloseSocket(int32_t nCloseCode = 0);
+	virtual void Close(int32_t nCloseCode = 0);
 	//与服务端建立连接
 	virtual int32_t Connect(const char* szRemoteIP, uint16_t nPort);
 	//接收数据
@@ -121,6 +126,8 @@ public:
 
 	//定时器事件
 	int32_t OnTimerEvent(CConnectTimer *pTimer);
+	//连接成功
+	int32_t Connected();
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode) = 0;
@@ -145,12 +152,9 @@ protected:
 	int32_t nWrite(const uint8_t *pBuffer, const int32_t nLength);
 	//改变epoll事件
 	void ChangeWriteEvent();
-
 private:
 	//连接超时
 	int32_t ConnectTimeout();
-	//连接成功
-	int32_t Connected();
 	//连接关闭
 	int32_t Disconnected(int32_t nCloseCode);
 
