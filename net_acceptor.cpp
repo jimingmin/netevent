@@ -21,7 +21,7 @@ CAcceptor::CAcceptor(CNetHandler *pNetHandler, IPacketParserFactory *pFactory, I
 
 int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 {
-	OpenSocket();
+	Open();
 
 	if((m_nSessionType == enmSessionType_Listen) || (nPort > 0))
 	{
@@ -30,7 +30,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 		int32_t ret = setsockopt(m_nSocketFD, SOL_SOCKET, SO_REUSEADDR, &op, sizeof(op));
 		if (0 != ret)
 		{
-			CloseSocket();
+			Close();
 			return E_SOCKETOPTION;
 		}
 		//填充服务器地址&端口信息
@@ -49,7 +49,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 		ret = bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
 		if (0 != ret)
 		{
-			CloseSocket();
+			Close();
 			return E_SOCKETBIND;
 		}
 
@@ -57,7 +57,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 		ret = listen(m_nSocketFD, SOMAXCONN);
 		if (0 != ret)
 		{
-			CloseSocket();
+			Close();
 			return E_SOCKETLISTEN;
 		}
 
@@ -104,9 +104,7 @@ int32_t CAcceptor::OnError(int32_t nErrorCode)
 int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress,
 		socklen_t nPeerAddressLen)
 {
-	IPacketParser *pPacketParser = m_pPacketParserFactory->Create();
-	CConnection *pConnection = new CConnection(m_pNetHandler, pPacketParser, m_pIOHandler);
-
+	CConnection *pConnection = g_ConnMgt.CreateConnection(m_pNetHandler, m_pPacketParserFactory, m_pIOHandler);
 	pConnection->SetSocketFD(nAcceptFD);
 	pConnection->SetSessionStatus(enmSessionStatus_Connected);
 	pConnection->SetPeerAddress((uint32_t)stPeerAddress.sin_addr.s_addr);
@@ -115,10 +113,10 @@ int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress
 
 	set_non_block(nAcceptFD);
 
+	g_ConnMgt.RegistConnection(pConnection);
+
 	m_pNetHandler->RegistEvent(pConnection, mask_read | mask_write);
 	m_pIOHandler->OnOpened(pConnection);
-
-	g_ConnMgt.RegistConnection(pConnection);
 
 	return S_OK;
 }
