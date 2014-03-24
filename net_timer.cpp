@@ -9,6 +9,7 @@
 #include "net_socket.h"
 #include "net_timer.h"
 #include "../common/common_datetime.h"
+#include "../common/common_memmgt.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -20,7 +21,7 @@ CConnectTimer *CConnectTimerMgt::CreateConnectTimer(CSocket *pSocket, ConnectTim
 		return NULL;
 	}
 
-	CConnectTimer *pTimer = new(nothrow) CConnectTimer();
+	CConnectTimer *pTimer = NEW(CConnectTimer);
 	if(pTimer == NULL)
 	{
 		return NULL;
@@ -94,7 +95,7 @@ int32_t CConnectTimerMgt::DestroyConnectTimer(CConnectTimer *pTimer)
 		if(pTimer == *it)
 		{
 			m_stConnectTimerList.erase(it);
-			delete pTimer;
+			DELETE(pTimer);
 			break;
 		}
 	}
