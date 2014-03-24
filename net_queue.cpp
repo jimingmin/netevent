@@ -29,6 +29,16 @@ NetPacket *CNetQueue::Pop()
 	return pPacket;
 }
 
+NetPacket *CNetQueue::Front()
+{
+	if(m_stNetPacketQueue.empty())
+	{
+		return NULL;
+	}
+
+	return m_stNetPacketQueue.front();
+}
+
 bool CNetQueue::Empty()
 {
 	return m_stNetPacketQueue.empty();

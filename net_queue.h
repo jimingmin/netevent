@@ -23,6 +23,8 @@ public:
 
 	NetPacket *Pop();
 
+	NetPacket *Front();
+
 	bool Empty();
 
 protected:
