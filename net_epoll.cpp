@@ -15,7 +15,9 @@ NETEVENT_NAMESPACE_BEGIN
 CEpoll::CEpoll()
 {
 	m_nEpollFD = 0;
+	m_nMaxFD = 0;
 	m_nEpollEventTimeout = 50;
+	m_pEpollEvent = NULL;
 }
 
 CEpoll::~CEpoll()
