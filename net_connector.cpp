@@ -11,6 +11,7 @@
 #include "net_handler.h"
 #include "net_connection.h"
 #include "net_errordef.h"
+#include "net_connmgt.h"
 
 #include <errno.h>
 
@@ -30,75 +31,92 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTi
 		return E_REMOTEIP;
 	}
 
-	IPacketParser *pPacketParser = m_pPacketParserFactory->Create();
-	CSocket *pSocket = new CConnection(m_pNetHandler, pPacketParser, m_pIOHandler);
-	if(pSocket == NULL)
+	CConnection *pConn = g_ConnMgt.CreateConnection(m_pNetHandler, m_pPacketParserFactory, m_pIOHandler);
+	if(pConn == NULL)
 	{
-		m_pPacketParserFactory->Destory(pPacketParser);
 		return E_NULLPOINTER;
 	}
 
-	pSocket->OpenSocket();
+	pConn->Open();
 
 	//更新套接字类型和状态
-	pSocket->SetSessionType(enmSessionType_Communicate);
+	pConn->SetSessionType(enmSessionType_Communicate);
 
-	//判断套接字类型
-	if (enmSessionType_Communicate != pSocket->GetSessionType())
+	uint32_t nRet = S_OK;
+	do
 	{
-		m_pPacketParserFactory->Destory(pPacketParser);
-		return E_SOCKETTYPE;
-	}
-
-	//套接字是否打开
-	if ((enmInvalidSocketFD == pSocket->GetSocketFD()) || (enmSessionStatus_Opened != pSocket->GetSessionStatus()))
-	{
-		m_pPacketParserFactory->Destory(pPacketParser);
-		return E_SOCKETNOTCREATED;
-	}
-
-	pSocket->SetPeerAddress(szRemoteIP);
-	pSocket->SetPeerPort(nPort);
-	pSocket->SetPeerAddress((uint32_t)inet_addr(szRemoteIP));
-
-	struct sockaddr_in addr;
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr(szRemoteIP);
-	addr.sin_port = htons(nPort);
-
-	CConnectTimer *pConnTimer = g_ConnectTimerMgt.CreateConnectTimer(pSocket,
-			static_cast<ConnectTimerProc>(&CConnection::OnTimerEvent), nTimeout);
-	if(pConnTimer == NULL)
-	{
-		m_pPacketParserFactory->Destory(pPacketParser);
-		return E_UNKNOWN;
-	}
-
-	pSocket->SetConnectTimer(pConnTimer);
-
-	//与服务器端建立连接
-	int32_t ret = connect(pSocket->GetSocketFD(), (const struct sockaddr*)&addr, sizeof(addr));
-	if (0 != ret)
-	{
-		if (errno != EINPROGRESS)
+		//判断套接字类型
+		if (enmSessionType_Communicate != pConn->GetSessionType())
 		{
-			m_pPacketParserFactory->Destory(pPacketParser);
-			pSocket->CloseSocket();
-			return E_SOCKETCONNECT;
+			nRet = E_SOCKETTYPE;
+			break;
+		}
+
+		//套接字是否打开
+		if ((enmInvalidSocketFD == pConn->GetSocketFD()) || (enmSessionStatus_Opened != pConn->GetSessionStatus()))
+		{
+			nRet = E_SOCKETNOTCREATED;
+			break;
+		}
+
+		pConn->SetPeerAddress(szRemoteIP);
+		pConn->SetPeerPort(nPort);
+		pConn->SetPeerAddress((uint32_t)inet_addr(szRemoteIP));
+
+		struct sockaddr_in addr;
+		memset(&addr, 0, sizeof(addr));
+		addr.sin_family = AF_INET;
+		addr.sin_addr.s_addr = inet_addr(szRemoteIP);
+		addr.sin_port = htons(nPort);
+
+		CConnectTimer *pConnTimer = g_ConnectTimerMgt.CreateConnectTimer(pConn,
+				static_cast<ConnectTimerProc>(&CConnection::OnTimerEvent), nTimeout);
+		if(pConnTimer == NULL)
+		{
+			nRet = E_UNKNOWN;
+			break;
+		}
+
+		pConn->SetConnectTimer(pConnTimer);
+
+		//与服务器端建立连接
+		int32_t ret = connect(pConn->GetSocketFD(), (const struct sockaddr*)&addr, sizeof(addr));
+		if (0 != ret)
+		{
+			if (errno != EINPROGRESS)
+			{
+				nRet = E_SOCKETCONNECT;
+				break;
+			}
+			else
+			{
+				m_pNetHandler->RegistEvent(pConn, mask_read | mask_write);
+				pConn->SetSessionStatus(enmSessionStatus_Connecting);
+				nRet = E_SOCKET_CONNECTING;
+				break;
+			}
 		}
 		else
 		{
-			m_pNetHandler->RegistEvent(pSocket, mask_read | mask_write);
-			pSocket->SetSessionStatus(enmSessionStatus_Connecting);
-			return E_SOCKET_CONNECTING;
+			m_pNetHandler->RegistEvent(pConn, mask_read | mask_write);
+			//更新套接字状态
+			pConn->SetSessionStatus(enmSessionStatus_Connected);
+
+			pConn->Connected();
 		}
+	}while(false);
+
+	if((nRet != S_OK) && (nRet != E_SOCKET_CONNECTING))
+	{
+		pConn->Close();
 	}
 
-	m_pNetHandler->RegistEvent(pSocket, mask_read | mask_write);
-	//更新套接字状态
-	pSocket->SetSessionStatus(enmSessionStatus_Connected);
 	return S_OK;
+}
+
+CNetHandler *CConnector::GetNetHandler()
+{
+	return m_pNetHandler;
 }
 
 //读事件回调

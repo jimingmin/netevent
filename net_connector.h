@@ -24,6 +24,7 @@ public:
 
 	int32_t Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTimeout = 3000);
 
+	CNetHandler *GetNetHandler();
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode);
