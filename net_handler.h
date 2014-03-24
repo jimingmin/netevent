@@ -49,10 +49,9 @@ public:
 
 	void PushPacket(NetPacket *pPacket);
 
+	int32_t SendPacket(NetPacket *pPacket);
 protected:
 	int32_t MessagePump();
-
-	int32_t SendPacket();
 
 	int32_t HandleTimeOutEvent();
 

@@ -121,13 +121,19 @@ int32_t CNetHandler::Run()
 
 int32_t CNetHandler::MessagePump()
 {
-	int32_t nMessageResult = SendPacket();
+	int32_t nWaitTimeout = enmWaitTimeout;
 
-	int32_t nWaitTimeout = 0;
-	if(nMessageResult == S_FALSE)
+	while(!m_stSendQueue.Empty())
 	{
-		nWaitTimeout = 50;
+		NetPacket *pPacket = m_stSendQueue.Pop();
+		int32_t nMessageResult = SendPacket(pPacket);
+		if(nMessageResult == S_FALSE)
+		{
+		}
+		nWaitTimeout = 0;
+		DELETE(pPacket);
 	}
+
 	int32_t nEventCount = 0;
 	if(m_pReactor != NULL)
 	{
@@ -137,14 +143,8 @@ int32_t CNetHandler::MessagePump()
 	return nEventCount;
 }
 
-int32_t CNetHandler::SendPacket()
+int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 {
-	if(m_stSendQueue.Empty())
-	{
-		return S_FALSE;
-	}
-
-	NetPacket *pPacket = m_stSendQueue.Pop();
 	CConnection *pConnection = g_ConnMgt.GetConnection(pPacket->m_nSessionID);
 	if(pConnection == NULL)
 	{
@@ -157,8 +157,10 @@ int32_t CNetHandler::SendPacket()
 		//Ð´µ½Ñ­»·bufÁË
 		pConnection->WritedToLowerBuf(pPacket->m_pNetPacket, nSendBytes);
 	}
-
-	DELETE(pPacket);
+	else
+	{
+		pConnection->Close();
+	}
 
 	return S_OK;
 }
