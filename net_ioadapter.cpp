@@ -34,4 +34,8 @@ int32_t CIOHandlerAdapter::OnError(IIOSession *pIoSession)
 	return 0;
 }
 
+int32_t CIOHandlerAdapter::OnTimeout(IIOSession *pIoSession)
+{
+	return 0;
+}
 NETEVENT_NAMESPACE_END

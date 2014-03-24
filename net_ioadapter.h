@@ -25,6 +25,8 @@ public:
 	virtual int32_t OnClosed(IIOSession *pIoSession);
 
 	virtual int32_t OnError(IIOSession *pIoSession);
+
+	virtual int32_t OnTimeout(IIOSession *pIoSession);
 };
 
 NETEVENT_NAMESPACE_END
