@@ -1,14 +1,14 @@
-/*
+ï»¿/*
  * net_socket.cpp
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 
-#include "net_api.h"
 #include "net_socket.h"
 #include "net_eventid.h"
 #include "net_handler.h"
+#include "net_reactor.h"
 
 #include <time.h>
 
@@ -33,36 +33,36 @@ CSocket::~CSocket()
 	}
 }
 
-//ÉèÖÃ»á»°ID,È«¾ÖÎ¨Ò»
+//è®¾ç½®ä¼šè¯ID,å…¨å±€å”¯ä¸€
 void CSocket::SetSessionID(SessionID nID)
 {
 	m_nSessionID = nID;
 }
-//»ñÈ¡»á»°ID,È«¾ÖÎ¨Ò»
+//è·å–ä¼šè¯ID,å…¨å±€å”¯ä¸€
 SessionID CSocket::GetSessionID()
 {
 	return m_nSessionID;
 }
 
-//ÉèÖÃÌ×½Ó×ÖÃèÊö·û
+//è®¾ç½®å¥—æ¥å­—æè¿°ç¬¦
 void CSocket::SetSocketFD(SocketFD nSocketFD)
 {
 	m_nSocketFD = nSocketFD;
 }
 
-//»ñÈ¡Ì×½Ó×ÖÃèÊö·û
+//è·å–å¥—æ¥å­—æè¿°ç¬¦
 SocketFD CSocket::GetSocketFD() const
 {
 	return m_nSocketFD;
 }
 
-//ÉèÖÃÌ×½Ó×Ö×´Ì¬
+//è®¾ç½®å¥—æ¥å­—çŠ¶æ€
 void CSocket::SetSessionStatus(SessionStatus nSocketStatus)
 {
 	m_nSessionStatus = nSocketStatus;
 }
 
-//»ñÈ¡Ì×½Ó×Ö×´Ì¬
+//è·å–å¥—æ¥å­—çŠ¶æ€
 SessionStatus CSocket::GetSessionStatus() const
 {
 	return m_nSessionStatus;
@@ -159,7 +159,7 @@ int32_t CSocket::ReadEvent()
 {
 	int32_t nRet = S_OK;
 
-	//ÊÇ¼àÌıÌ×½Ó×ÖµÄ¶ÁÊÂ¼ş
+	//æ˜¯ç›‘å¬å¥—æ¥å­—çš„è¯»äº‹ä»¶
 	if(enmSessionType_Listen == m_nSessionType)
 	{
 		struct sockaddr_in stPeerAddress;
@@ -169,7 +169,7 @@ int32_t CSocket::ReadEvent()
 		do
 		{
 			nAcceptFD = accept(m_nSocketFD, (struct sockaddr *)&stPeerAddress, &nPeerAddressLen);
-			if(nAcceptFD < 0)
+			if(nAcceptFD == INVALID_SOCKET)
 			{
 				break;
 			}
@@ -177,18 +177,22 @@ int32_t CSocket::ReadEvent()
 			nRet = OnAccept(nAcceptFD, stPeerAddress, nPeerAddressLen);
 			if(nRet < 0)
 			{
+#ifdef WIN32
+				closesocket(nAcceptFD);
+#else
 				close(nAcceptFD);
+#endif
 			}
 		}while(nAcceptFD > 0);
 
 	}
-	//·Ç¼àÌıÌ×½Ó×Ö
+	//éç›‘å¬å¥—æ¥å­—
 	else
 	{
 		int32_t nError = 0;
 		socklen_t nLen = sizeof(int32_t);
 
-		if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, &nError, &nLen))
+		if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, (char *)&nError, &nLen))
 		{
 			nError = 0;
 		}
@@ -204,7 +208,7 @@ int32_t CSocket::WriteEvent()
 	int32_t nError = 0;
 	socklen_t nLen = sizeof(int32_t);
 
-	if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, &nError, &nLen))
+	if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, (char *)&nError, &nLen))
 	{
 		nError = 0;
 	}
@@ -213,7 +217,7 @@ int32_t CSocket::WriteEvent()
 	{
 		int32_t nError = 0;
 //		socklen_t nLen = sizeof(int32_t);
-		//Á¬½Ó³É¹¦
+		//è¿æ¥æˆåŠŸ
 		if(0 == nError)
 		{
 			return Connected();
@@ -235,7 +239,7 @@ int32_t CSocket::ErrorEvent()
 	int32_t nError = 0;
 	socklen_t nLen = sizeof(int32_t);
 
-	if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, &nError, &nLen))
+	if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, (char *)&nError, &nLen))
 	{
 		nError = 0;
 	}
@@ -248,14 +252,14 @@ int32_t CSocket::Write(uint8_t *pBuf, int32_t nBufSize)
 	return 0;
 }
 
-//½ÓÊÕÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+//æ¥æ”¶è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 int32_t CSocket::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress,
 		socklen_t nPeerAddressLen)
 {
 	return S_OK;
 }
 
-//Á¬½Ó³É¹¦»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+//è¿æ¥æˆåŠŸå›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 int32_t CSocket::OnConnected()
 {
 	return S_OK;
@@ -266,18 +270,18 @@ int32_t CSocket::OnConnectTimeout()
 	return S_OK;
 }
 
-//¶Ï¿ªÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©×ÊÔ´»ØÊÕµÄ¹¤×÷)
+//æ–­å¼€è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›èµ„æºå›æ”¶çš„å·¥ä½œ)
 int32_t CSocket::OnDisconnect(int32_t nCloseCode)
 {
 	return S_OK;
 }
 
-//·¢ËÍ»º´æÖĞÊ£ÓàµÄÊı¾İ
+//å‘é€ç¼“å­˜ä¸­å‰©ä½™çš„æ•°æ®
 int32_t CSocket::SendRestData()
 {
 	int32_t nSendBytes = 0;
 	//int32_t nWriteBytes = 0;
-	//ÏÈ·¢ËÍ»º´æÖĞÊ£ÓàµÄÊı¾İ
+	//å…ˆå‘é€ç¼“å­˜ä¸­å‰©ä½™çš„æ•°æ®
 	if(m_stSendBuffer.Size() > 0)
 	{
 		uint8_t arrPacketBuf[enmRecvBufferSize];
@@ -292,7 +296,7 @@ int32_t CSocket::SendRestData()
 			{
 				nRewriteIndex = nSendBytes;
 			}
-			//Ê£ÓàÊı¾İĞ´»Ø»º´æ
+			//å‰©ä½™æ•°æ®å†™å›ç¼“å­˜
 			m_stSendBuffer.WriteToHead(&arrPacketBuf[nRewriteIndex], nRealSize - nRewriteIndex);
 			if(errno != EAGAIN)
 			{
@@ -309,13 +313,13 @@ int32_t CSocket::SendRestData()
 
 int32_t CSocket::Open()
 {
-	//ÈôsocketÁ¬½ÓÒÑ´æÔÚÔòÏÈ¹Ø±ÕÌ×½Ó×Ö
+	//è‹¥socketè¿æ¥å·²å­˜åœ¨åˆ™å…ˆå…³é—­å¥—æ¥å­—
 	if (enmInvalidSocketFD != m_nSocketFD)
 	{
 		Close(SYS_EVENT_CONN_CONFLICT);
 	}
 
-	//´ò¿ªÌ×½Ó×Ö
+	//æ‰“å¼€å¥—æ¥å­—
 	m_nSocketFD = socket(AF_INET, SOCK_STREAM, 0);
 	if (enmInvalidSocketFD == m_nSocketFD)
 	{
@@ -329,7 +333,7 @@ int32_t CSocket::Open()
 }
 
 
-//¹Ø±ÕÌ×½Ó×Ö
+//å…³é—­å¥—æ¥å­—
 void CSocket::Close(int32_t nCloseCode)
 {
 	if (enmInvalidSocketFD != m_nSocketFD)
@@ -337,29 +341,33 @@ void CSocket::Close(int32_t nCloseCode)
 		if(m_nSessionStatus != enmSessionStatus_Closed)
 		{
 			Disconnected(nCloseCode);
-			//¸üĞÂÌ×½Ó×Ö×´Ì¬
+			//æ›´æ–°å¥—æ¥å­—çŠ¶æ€
 			m_nSessionStatus = enmSessionStatus_Closed;
 		}
+#ifdef WIN32
+		closesocket(m_nSocketFD);
+#else
 		close(m_nSocketFD);
+#endif
 		m_nSocketFD = enmInvalidSocketFD;
 
 		Clear();
 	}
 }
 
-//Óë·şÎñ¶Ë½¨Á¢Á¬½Ó
+//ä¸æœåŠ¡ç«¯å»ºç«‹è¿æ¥
 int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 {
 	return S_OK;
 }
 
-//¶¨Ê±Æ÷ÊÂ¼ş
+//å®šæ—¶å™¨äº‹ä»¶
 int32_t CSocket::OnTimerEvent(CConnectTimer *pTimer)
 {
 	return ConnectTimeout();
 }
 
-//Á¬½Ó³¬Ê±
+//è¿æ¥è¶…æ—¶
 int32_t CSocket::ConnectTimeout()
 {
 	if(m_pConnectTimer != NULL)
@@ -368,7 +376,7 @@ int32_t CSocket::ConnectTimeout()
 		m_pConnectTimer = NULL;
 	}
 
-	//¶à´Î·¢ËÍÁ¬½ÓÇëÇóµÄÇé¿öÏÂ£¬¿ÉÄÜÄ³Ò»´ÎÁ¬½Ó³É¹¦ÁË£¬ÁíÍâÒ»Ğ©Á¬½ÓÇëÇó³¬Ê±
+	//å¤šæ¬¡å‘é€è¿æ¥è¯·æ±‚çš„æƒ…å†µä¸‹ï¼Œå¯èƒ½æŸä¸€æ¬¡è¿æ¥æˆåŠŸäº†ï¼Œå¦å¤–ä¸€äº›è¿æ¥è¯·æ±‚è¶…æ—¶
 	if((m_nSessionStatus == enmSessionStatus_Connected) ||
 				(m_nSessionStatus == enmSessionStatus_Available))
 	{
@@ -385,7 +393,7 @@ int32_t CSocket::ConnectTimeout()
 	return OnConnectTimeout();
 }
 
-//Á¬½Ó³É¹¦µÄ»Øµ÷
+//è¿æ¥æˆåŠŸçš„å›è°ƒ
 int32_t CSocket::Connected()
 {
 	if(m_pConnectTimer != NULL)
@@ -412,7 +420,7 @@ int32_t CSocket::Connected()
 		return S_OK;
 	}
 
-	//Èç¹û±¾µØµØÖ·ºÍ¶Ë¿ÚµÈÓÚÔ¶³ÌµØÖ·ºÍ¶Ë¿Ú£¬¾Í¶Ï¿ªÁ¬½Ó
+	//å¦‚æœæœ¬åœ°åœ°å€å’Œç«¯å£ç­‰äºè¿œç¨‹åœ°å€å’Œç«¯å£ï¼Œå°±æ–­å¼€è¿æ¥
 	if(((strcmp(m_szClientAddress, "127.0.0.1") == 0) ||
 				(strcmp(m_szClientAddress, inet_ntoa(stLocalAddr.sin_addr)) == 0)) &&
 				(stLocalAddr.sin_port == htons(m_nPeerPort)))
@@ -428,7 +436,7 @@ int32_t CSocket::Connected()
 	return OnConnected();
 }
 
-//Á¬½Ó³É¹¦µÄ»Øµ÷
+//è¿æ¥æˆåŠŸçš„å›è°ƒ
 int32_t CSocket::Disconnected(int32_t nCloseCode)
 {
 	if(m_pConnectTimer != NULL)
@@ -440,12 +448,12 @@ int32_t CSocket::Disconnected(int32_t nCloseCode)
 	return OnDisconnect(nCloseCode);
 }
 
-//½ÓÊÕÊı¾İ
+//æ¥æ”¶æ•°æ®
 int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 {
 	nRecvBytes = 0;
 
-	//Ì×½Ó×ÖÊÇ·ñ´ò¿ª
+	//å¥—æ¥å­—æ˜¯å¦æ‰“å¼€
 	if (enmInvalidSocketFD == m_nSocketFD)
 	{
 		return E_SOCKETNOTCREATED;
@@ -458,15 +466,16 @@ int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 		if(!getpeername(m_nSocketFD, (struct sockaddr *)&sa, &nLen))
 		{
 			Connected();
-			return S_OK;
 		}
-
-		return E_SOCKETERROR;
+		else
+		{
+			return E_SOCKETERROR;
+		}
 	}
 
 	m_nLastRecvTime = time(NULL);
 
-	//½ÓÊÕÊı¾İ
+	//æ¥æ”¶æ•°æ®
 	bool isConnClose = false;
 	int32_t n = nRead(pBuffer, nSize,isConnClose);
 	if (0 < n)
@@ -487,23 +496,23 @@ int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 	}
 	else if (0 == n)
 	{
-		//Á¬½ÓÒÑ¶Ï¿ª
+		//è¿æ¥å·²æ–­å¼€
 		return E_SOCKETDISCONNECTED;
 	}
 	else if (EAGAIN != errno)
 	{
-		//½ÓÊÕ³ö´í
+		//æ¥æ”¶å‡ºé”™
 		return E_SOCKETERROR;
 	}
 
 	return S_OK;
 }
-//·¢ËÍÊı¾İ
+//å‘é€æ•°æ®
 int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nSendBytes)
 {
 	nSendBytes = 0;
 
-	//Ì×½Ó×ÖÊÇ·ñ´ò¿ª
+	//å¥—æ¥å­—æ˜¯å¦æ‰“å¼€
 	if (enmInvalidSocketFD == m_nSocketFD)
 	{
 		return E_SOCKETNOTCREATED;
@@ -516,13 +525,15 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 		if(!getpeername(m_nSocketFD, (struct sockaddr *)&sa, &nLen))
 		{
 			Connected();
-			return S_OK;
+		}
+		else
+		{
+			return E_SOCKETERROR;
 		}
 
-		return E_SOCKETERROR;
 	}
 
-	//·¢ËÍ»º´æ»¹ÓĞÊı¾İ
+	//å‘é€ç¼“å­˜è¿˜æœ‰æ•°æ®
 	if(m_stSendBuffer.Size() > 0)
 	{
 		uint8_t arrSendBuf[enmRecvBufferSize];
@@ -538,7 +549,7 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 				{
 					nRewriteIndex = nSendSizes;
 				}
-				//Ê£ÓàÊı¾İĞ´»Ø·¢ËÍ»º´æ
+				//å‰©ä½™æ•°æ®å†™å›å‘é€ç¼“å­˜
 				m_stSendBuffer.WriteToHead(&arrSendBuf[nRewriteIndex], nRealRestSize - nRewriteIndex);
 
 				ChangeWriteEvent();
@@ -570,7 +581,7 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 		{
 			nRewriteIndex = nSendBytes;
 		}
-		//Ê£ÓàÊı¾İĞ´»Ø·¢ËÍ»º´æ
+		//å‰©ä½™æ•°æ®å†™å›å‘é€ç¼“å­˜
 		m_stSendBuffer.WriteToHead(&pBuffer[nRewriteIndex], nLength - nRewriteIndex);
 
 		ChangeWriteEvent();
@@ -594,7 +605,7 @@ void CSocket::SetIOEvents(uint32_t nEvents)
 	m_nIOEvents = nEvents;
 }
 
-//³¢ÊÔ¾¡×î´óÅ¬Á¦¶ÁÈ¡Ïë¶ÁµÄÊı¾İ
+//å°è¯•å°½æœ€å¤§åŠªåŠ›è¯»å–æƒ³è¯»çš„æ•°æ®
 int32_t CSocket::nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose)
 {
 	int32_t nReadBytes = 0;
@@ -604,7 +615,7 @@ int32_t CSocket::nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose
 		return nReadBytes;
 	}
 
-	//Ì×½Ó×ÖÊÇ·ñ´ò¿ª
+	//å¥—æ¥å­—æ˜¯å¦æ‰“å¼€
 	if ((enmInvalidSocketFD == m_nSocketFD) || ((enmSessionStatus_Available != m_nSessionStatus)&&(enmSessionStatus_Connected != m_nSessionStatus)))
 	{
 		return nReadBytes;
@@ -612,7 +623,7 @@ int32_t CSocket::nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose
 
 	do
 	{
-		int32_t nRecvBytes = recv(m_nSocketFD, pBuffer + nReadBytes, nLength - nReadBytes, 0);
+		int32_t nRecvBytes = recv(m_nSocketFD, (char *)(pBuffer + nReadBytes), nLength - nReadBytes, 0);
 		if(nRecvBytes > 0)
 		{
 			nReadBytes += nRecvBytes;
@@ -637,7 +648,7 @@ int32_t CSocket::nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose
 	return nReadBytes;
 }
 
-//³¢ÊÔ¾¡×î´óÅ¬Á¦Ğ´ÈëÏëĞ´µÄÊı¾İ
+//å°è¯•å°½æœ€å¤§åŠªåŠ›å†™å…¥æƒ³å†™çš„æ•°æ®
 int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 {
 	int32_t nWriteBytes = 0;
@@ -647,7 +658,7 @@ int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 		return nWriteBytes;
 	}
 
-	//Ì×½Ó×ÖÊÇ·ñ´ò¿ª
+	//å¥—æ¥å­—æ˜¯å¦æ‰“å¼€
 	if ((enmInvalidSocketFD == m_nSocketFD) || ((enmSessionStatus_Available != m_nSessionStatus)&&(enmSessionStatus_Connected != m_nSessionStatus)))
 	{
 		return nWriteBytes;
@@ -655,7 +666,7 @@ int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 
 	do
 	{
-		int32_t nBytes = send(m_nSocketFD, pBuffer + nWriteBytes, nLength - nWriteBytes, 0);
+		int32_t nBytes = send(m_nSocketFD, (char *)(pBuffer + nWriteBytes), nLength - nWriteBytes, 0);
 		if(nBytes > 0)
 		{
 			nWriteBytes += nBytes;
@@ -664,7 +675,7 @@ int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 		{
 //			if(EAGAIN != errno)
 //			{
-//				//³öÏÖÒì³£ÔòÏÈĞ´Èë·¢ËÍ»º´æ
+//				//å‡ºç°å¼‚å¸¸åˆ™å…ˆå†™å…¥å‘é€ç¼“å­˜
 //				m_stSendBuffer.WriteToHead(pBuffer + nWriteBytes, nLength - nWriteBytes);
 //				CloseSocket();
 //			}
@@ -678,7 +689,7 @@ int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 	return nWriteBytes;
 }
 
-//¸Ä±äepollÊÂ¼ş
+//æ”¹å˜epolläº‹ä»¶
 void CSocket::ChangeWriteEvent()
 {
 	if((m_stSendBuffer.Size() > 0) && ((m_nIOEvents & mask_write) == 0))

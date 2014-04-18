@@ -1,12 +1,14 @@
-/*
+ï»¿/*
  * net_epoll.h
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 
 #ifndef NET_EPOLL_H_
 #define NET_EPOLL_H_
+
+#ifdef unix
 
 #include "net_namespace.h"
 #include "net_typedef.h"
@@ -47,5 +49,6 @@ protected:
 
 NETEVENT_NAMESPACE_END
 
+#endif
 
 #endif /* NET_EPOLL_H_ */

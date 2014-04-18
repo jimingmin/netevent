@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_connection.cpp
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
@@ -62,7 +62,7 @@ int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 	pPacket->m_nNetPacketLen = nBufSize + 1;
 	pPacket->m_nSessionID = m_nSessionID;
 	memcpy(pPacket->m_pNetPacket, pBuf, nBufSize);
-	pPacket->m_pNetPacket[nBufSize] = '\0';//Ö÷ÒªÊÇÕë¶ÔÏûÏ¢ÊÇ×Ö·û´®µÄ°ü£¬Ôö¼Ó°²È«ÐÔ
+	pPacket->m_pNetPacket[nBufSize] = '\0';//ä¸»è¦æ˜¯é’ˆå¯¹æ¶ˆæ¯æ˜¯å­—ç¬¦ä¸²çš„åŒ…ï¼Œå¢žåŠ å®‰å…¨æ€§
 
 	m_pNetHandler->PushPacket(pPacket);
 
@@ -76,7 +76,7 @@ int32_t CConnection::WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize)
 	return nBufSize;
 }
 
-//¶ÁÊÂ¼þ»Øµ÷
+//è¯»äº‹ä»¶å›žè°ƒ
 int32_t CConnection::OnRead(int32_t nErrorCode)
 {
 	uint8_t arrBuf[enmMaxMessageSize];
@@ -92,7 +92,7 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 	if(nRecvBytes > 0)
 	{
 		m_pPacketParser->InputData(arrBuf, nRecvBytes);
-		//ÌáÈ¡ÏûÏ¢°ü
+		//æå–æ¶ˆæ¯åŒ…
 		do
 		{
 			int32_t nPacketSize = 0;
@@ -120,7 +120,7 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 	return S_OK;
 }
 
-//Ð´ÊÂ¼þ»Øµ÷
+//å†™äº‹ä»¶å›žè°ƒ
 int32_t CConnection::OnWrite(int32_t nErrorCode)
 {
 	if(nErrorCode != 0)
@@ -139,7 +139,7 @@ int32_t CConnection::OnWrite(int32_t nErrorCode)
 	return S_OK;
 }
 
-//Òì³£ÊÂ¼þ»Øµ÷
+//å¼‚å¸¸äº‹ä»¶å›žè°ƒ
 int32_t CConnection::OnError(int32_t nErrorCode)
 {
 	m_pIOHandler->OnError(this);
@@ -147,7 +147,7 @@ int32_t CConnection::OnError(int32_t nErrorCode)
 	return S_OK;
 }
 
-//Á¬½Ó³É¹¦»Øµ÷(ÖØÔØ´Ëº¯Êý£¬¿ÉÒÔÔÚÕâÀï×öÐ©Á¬½ÓÐÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+//è¿žæŽ¥æˆåŠŸå›žè°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿žæŽ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 int32_t CConnection::OnConnected()
 {
 	g_ConnMgt.RegistConnection(this);
@@ -156,7 +156,7 @@ int32_t CConnection::OnConnected()
 
 	return S_OK;
 }
-//Á¬½Ó³¬Ê±»Øµ÷
+//è¿žæŽ¥è¶…æ—¶å›žè°ƒ
 int32_t CConnection::OnConnectTimeout()
 {
 	m_pIOHandler->OnTimeout(this);
@@ -164,7 +164,7 @@ int32_t CConnection::OnConnectTimeout()
 	return S_OK;
 }
 
-//¶Ï¿ªÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êý£¬¿ÉÒÔÔÚÕâÀï×öÐ©×ÊÔ´»ØÊÕµÄ¹¤×÷)
+//æ–­å¼€è¿žæŽ¥å›žè°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›èµ„æºå›žæ”¶çš„å·¥ä½œ)
 int32_t CConnection::OnDisconnect(int32_t nCloseCode)
 {
 	m_pNetHandler->DeleteEvent(this);

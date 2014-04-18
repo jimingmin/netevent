@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_select.h
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 
@@ -11,10 +11,12 @@
 #include "net_namespace.h"
 #include "net_typedef.h"
 #include "net_reactor.h"
-#include <sys/time.h>
+//#include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
+//#include <unistd.h>
+#ifdef unix
 #include <sys/select.h>
+#endif
 #include <map>
 
 using namespace std;

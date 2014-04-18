@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_timer.cpp
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 

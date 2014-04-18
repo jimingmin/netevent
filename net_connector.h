@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_connector.h
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
@@ -20,17 +20,17 @@ class CNetHandler;
 class CConnector : public CSocket
 {
 public:
-	CConnector(CNetHandler *pNetHandler, IPacketParserFactory *pFactory, IIOHandler *pIOHandler);
+	EXPORT CConnector(CNetHandler *pNetHandler, IPacketParserFactory *pFactory, IIOHandler *pIOHandler);
 
-	int32_t Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTimeout = 3000);
+	EXPORT int32_t Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTimeout = 3000);
 
-	CNetHandler *GetNetHandler();
+	EXPORT CNetHandler *GetNetHandler();
 protected:
-	//¶ÁÊÂ¼þ»Øµ÷
+	//è¯»äº‹ä»¶å›žè°ƒ
 	virtual int32_t OnRead(int32_t nErrorCode);
-	//Ð´ÊÂ¼þ»Øµ÷
+	//å†™äº‹ä»¶å›žè°ƒ
 	virtual int32_t OnWrite(int32_t nErrorCode);
-	//Òì³£ÊÂ¼þ»Øµ÷
+	//å¼‚å¸¸äº‹ä»¶å›žè°ƒ
 	virtual int32_t OnError(int32_t nErrorCode);
 protected:
 	CNetHandler				*m_pNetHandler;

@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_impl.h
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 
@@ -10,6 +10,7 @@
 
 #include "net_namespace.h"
 #include "net_packet.h"
+#include "net_typedef.h"
 #include "../common/common_object.h"
 
 NETEVENT_NAMESPACE_BEGIN
@@ -19,37 +20,37 @@ class IIOSession : public CObject
 public:
 	virtual ~IIOSession(){};
 
-	//ÉèÖÃ»á»°ID,È«¾ÖÎ¨Ò»
+	//è®¾ç½®ä¼šè¯ID,å…¨å±€å”¯ä¸€
 	virtual void SetSessionID(SessionID nID) = 0;
-	//»ñÈ¡»á»°ID,È«¾ÖÎ¨Ò»
+	//è·å–ä¼šè¯ID,å…¨å±€å”¯ä¸€
 	virtual SessionID GetSessionID() = 0;
-	//ÉèÖÃÌ×½Ó×ÖÃèÊö·û
+	//è®¾ç½®å¥—æ¥å­—æè¿°ç¬¦
 	virtual void SetSocketFD(SocketFD nSocketFD) = 0;
-	//»ñÈ¡Ì×½Ó×ÖÃèÊö·û
+	//è·å–å¥—æ¥å­—æè¿°ç¬¦
 	virtual SocketFD GetSocketFD() const = 0;
-	//ÉèÖÃÌ×½Ó×Ö×´Ì¬
+	//è®¾ç½®å¥—æ¥å­—çŠ¶æ€
 	virtual void SetSessionStatus(SessionStatus nSocketStatus) = 0;
-	//»ñÈ¡Ì×½Ó×Ö×´Ì¬
+	//è·å–å¥—æ¥å­—çŠ¶æ€
 	virtual SessionStatus GetSessionStatus() const = 0;
-	//ÉèÖÃ»á»°ÀàĞÍ
+	//è®¾ç½®ä¼šè¯ç±»å‹
 	virtual void SetSessionType(SessionType nSocketType) = 0;
-	//»ñÈ¡»á»°ÀàĞÍ
+	//è·å–ä¼šè¯ç±»å‹
 	virtual SessionType GetSessionType() = 0;
-	//ÉèÖÃÔ¶¶ËµØÖ·
+	//è®¾ç½®è¿œç«¯åœ°å€
 	virtual void SetPeerAddress(const char *szAddress) = 0;
-	//ÉèÖÃÔ¶¶ËµØÖ·
+	//è®¾ç½®è¿œç«¯åœ°å€
 	virtual void SetPeerAddress(uint32_t nAddress) = 0;
-	//»ñÈ¡Ô¶¶ËµØÖ·
+	//è·å–è¿œç«¯åœ°å€
 	virtual char *GetPeerAddressStr() = 0;
-	//»ñÈ¡Ô¶¶ËµØÖ·
+	//è·å–è¿œç«¯åœ°å€
 	virtual uint32_t GetPeerAddress() = 0;
-	//ÉèÖÃÔ¶¶Ë¶Ë¿Ú
+	//è®¾ç½®è¿œç«¯ç«¯å£
 	virtual void SetPeerPort(uint16_t nPort) = 0;
-	//»ñÈ¡Ô¶¶Ë¶Ë¿Ú
+	//è·å–è¿œç«¯ç«¯å£
 	virtual uint16_t GetPeerPort() = 0;
-	//»ñÈ¡±¾µØµØÖ·
+	//è·å–æœ¬åœ°åœ°å€
 	virtual uint32_t GetLocalAddress() = 0;
-	//»ñÈ¡±¾µØ¶Ë¿Ú
+	//è·å–æœ¬åœ°ç«¯å£
 	virtual uint16_t GetLocalPort() = 0;
 
 	virtual int32_t ReadEvent() = 0;
@@ -61,13 +62,13 @@ public:
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize) = 0;
 
 	virtual int32_t Open() = 0;
-	//¹Ø±ÕÌ×½Ó×Ö
+	//å…³é—­å¥—æ¥å­—
 	virtual void Close(int32_t nCloseCode = 0) = 0;
-	//Óë·şÎñ¶Ë½¨Á¢Á¬½Ó
+	//ä¸æœåŠ¡ç«¯å»ºç«‹è¿æ¥
 	virtual int32_t Connect(const char* szRemoteIP, uint16_t nPort) = 0;
-	//½ÓÊÕÊı¾İ
+	//æ¥æ”¶æ•°æ®
 	virtual int32_t Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes) = 0;
-	//·¢ËÍÊı¾İ
+	//å‘é€æ•°æ®
 	virtual int32_t Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nSendBytes) = 0;
 };
 

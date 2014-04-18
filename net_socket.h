@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_socket.h
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 
@@ -19,7 +19,10 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/types.h>
+
+#ifndef WIN32
 #include <sys/socket.h>
+#endif
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -37,7 +40,7 @@ public:
 		Clear();
 	}
 
-	//×ÓÀàsocketÈç¹ûĞèÒªÖØÖÃÊı¾İ³ÉÔ±£¬×îºÃÅÉÉú´Ëº¯Êı
+	//å­ç±»socketå¦‚æœéœ€è¦é‡ç½®æ•°æ®æˆå‘˜ï¼Œæœ€å¥½æ´¾ç”Ÿæ­¤å‡½æ•°
 	virtual void Clear()
 	{
 		m_nSessionID = 0;
@@ -59,39 +62,39 @@ public:
 		m_pNetHandler = NULL;
 		m_nIOEvents = 0;
 	}
-	//ÉèÖÃ»á»°ID,È«¾ÖÎ¨Ò»
+	//è®¾ç½®ä¼šè¯ID,å…¨å±€å”¯ä¸€
 	virtual void SetSessionID(SessionID nID);
-	//»ñÈ¡»á»°ID,È«¾ÖÎ¨Ò»
+	//è·å–ä¼šè¯ID,å…¨å±€å”¯ä¸€
 	virtual SessionID GetSessionID();
-	//ÉèÖÃÌ×½Ó×ÖÃèÊö·û
+	//è®¾ç½®å¥—æ¥å­—æè¿°ç¬¦
 	virtual void SetSocketFD(SocketFD nSocketFD);
-	//»ñÈ¡Ì×½Ó×ÖÃèÊö·û
+	//è·å–å¥—æ¥å­—æè¿°ç¬¦
 	virtual SocketFD GetSocketFD() const;
-	//ÉèÖÃÌ×½Ó×Ö×´Ì¬
+	//è®¾ç½®å¥—æ¥å­—çŠ¶æ€
 	virtual void SetSessionStatus(SessionStatus nSocketStatus);
-	//»ñÈ¡Ì×½Ó×Ö×´Ì¬
+	//è·å–å¥—æ¥å­—çŠ¶æ€
 	virtual SessionStatus GetSessionStatus() const;
-	//ÉèÖÃ»á»°ÀàĞÍ
+	//è®¾ç½®ä¼šè¯ç±»å‹
 	virtual void SetSessionType(SessionType nSocketType);
-	//»ñÈ¡»á»°ÀàĞÍ
+	//è·å–ä¼šè¯ç±»å‹
 	virtual SessionType GetSessionType();
-	//ÉèÖÃÔ¶¶ËµØÖ·
+	//è®¾ç½®è¿œç«¯åœ°å€
 	virtual void SetPeerAddress(const char *szAddress);
-	//ÉèÖÃÔ¶¶ËµØÖ·
+	//è®¾ç½®è¿œç«¯åœ°å€
 	virtual void SetPeerAddress(uint32_t nAddress);
-	//»ñÈ¡Ô¶¶ËµØÖ·
+	//è·å–è¿œç«¯åœ°å€
 	virtual char *GetPeerAddressStr();
-	//»ñÈ¡Ô¶¶ËµØÖ·
+	//è·å–è¿œç«¯åœ°å€
 	virtual uint32_t GetPeerAddress();
-	//ÉèÖÃÔ¶¶Ë¶Ë¿Ú
+	//è®¾ç½®è¿œç«¯ç«¯å£
 	virtual void SetPeerPort(uint16_t nPort);
-	//»ñÈ¡Ô¶¶Ë¶Ë¿Ú
+	//è·å–è¿œç«¯ç«¯å£
 	virtual uint16_t GetPeerPort();
 	virtual void SetLocalAddress(uint32_t nAddress);
-	//»ñÈ¡±¾µØµØÖ·
+	//è·å–æœ¬åœ°åœ°å€
 	virtual uint32_t GetLocalAddress();
 	virtual void SetLocalPort(uint16_t nPort);
-	//»ñÈ¡±¾µØ¶Ë¿Ú
+	//è·å–æœ¬åœ°ç«¯å£
 	virtual uint16_t GetLocalPort();
 
 	virtual int32_t ReadEvent();
@@ -103,13 +106,13 @@ public:
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
 
 	virtual int32_t Open();
-	//¹Ø±ÕÌ×½Ó×Ö
+	//å…³é—­å¥—æ¥å­—
 	virtual void Close(int32_t nCloseCode = 0);
-	//Óë·şÎñ¶Ë½¨Á¢Á¬½Ó
+	//ä¸æœåŠ¡ç«¯å»ºç«‹è¿æ¥
 	virtual int32_t Connect(const char* szRemoteIP, uint16_t nPort);
-	//½ÓÊÕÊı¾İ
+	//æ¥æ”¶æ•°æ®
 	virtual int32_t Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes);
-	//·¢ËÍÊı¾İ
+	//å‘é€æ•°æ®
 	virtual int32_t Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nSendBytes);
 
 	void SetCreateTime(time_t nCreateTime);
@@ -124,57 +127,57 @@ public:
 
 	void SetIOEvents(uint32_t nEvents);
 
-	//¶¨Ê±Æ÷ÊÂ¼ş
+	//å®šæ—¶å™¨äº‹ä»¶
 	int32_t OnTimerEvent(CConnectTimer *pTimer);
-	//Á¬½Ó³É¹¦
+	//è¿æ¥æˆåŠŸ
 	int32_t Connected();
 protected:
-	//¶ÁÊÂ¼ş»Øµ÷
+	//è¯»äº‹ä»¶å›è°ƒ
 	virtual int32_t OnRead(int32_t nErrorCode) = 0;
-	//Ğ´ÊÂ¼ş»Øµ÷
+	//å†™äº‹ä»¶å›è°ƒ
 	virtual int32_t OnWrite(int32_t nErrorCode) = 0;
-	//Òì³£ÊÂ¼ş»Øµ÷
+	//å¼‚å¸¸äº‹ä»¶å›è°ƒ
 	virtual int32_t OnError(int32_t nErrorCode) = 0;
-	//½ÓÊÕÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+	//æ¥æ”¶è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 	virtual int32_t OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress,
 			socklen_t nPeerAddressLen);
-	//Á¬½Ó³É¹¦»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+	//è¿æ¥æˆåŠŸå›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 	virtual int32_t OnConnected();
-	//Á¬½Ó³¬Ê±»Øµ÷
+	//è¿æ¥è¶…æ—¶å›è°ƒ
 	virtual int32_t OnConnectTimeout();
-	//¶Ï¿ªÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©×ÊÔ´»ØÊÕµÄ¹¤×÷)
+	//æ–­å¼€è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›èµ„æºå›æ”¶çš„å·¥ä½œ)
 	virtual int32_t OnDisconnect(int32_t nCloseCode);
-	//·¢ËÍ»º´æÖĞÊ£ÓàµÄÊı¾İ
+	//å‘é€ç¼“å­˜ä¸­å‰©ä½™çš„æ•°æ®
 	virtual int32_t SendRestData();
-	//³¢ÊÔ¾¡×î´óÅ¬Á¦¶ÁÈ¡Ïë¶ÁµÄÊı¾İ
+	//å°è¯•å°½æœ€å¤§åŠªåŠ›è¯»å–æƒ³è¯»çš„æ•°æ®
 	int32_t nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose);
-	//³¢ÊÔ¾¡×î´óÅ¬Á¦Ğ´ÈëÏëĞ´µÄÊı¾İ
+	//å°è¯•å°½æœ€å¤§åŠªåŠ›å†™å…¥æƒ³å†™çš„æ•°æ®
 	int32_t nWrite(const uint8_t *pBuffer, const int32_t nLength);
-	//¸Ä±äepollÊÂ¼ş
+	//æ”¹å˜epolläº‹ä»¶
 	void ChangeWriteEvent();
 private:
-	//Á¬½Ó³¬Ê±
+	//è¿æ¥è¶…æ—¶
 	int32_t ConnectTimeout();
-	//Á¬½Ó¹Ø±Õ
+	//è¿æ¥å…³é—­
 	int32_t Disconnected(int32_t nCloseCode);
 
 protected:
-	SessionID		m_nSessionID;				//È«¾ÖÎ¨Ò»ID
-	SocketFD		m_nSocketFD;				//Ì×½Ó×ÖÃèÊö·û
-	SessionType		m_nSessionType;				//±íÊ¾»á»°ÊÇ¼àÌıÀàĞÍ»¹ÊÇÍ¨ĞÅÀàĞÍ
-	SessionStatus	m_nSessionStatus;			//»á»°×´Ì¬
+	SessionID		m_nSessionID;				//å…¨å±€å”¯ä¸€ID
+	SocketFD		m_nSocketFD;				//å¥—æ¥å­—æè¿°ç¬¦
+	SessionType		m_nSessionType;				//è¡¨ç¤ºä¼šè¯æ˜¯ç›‘å¬ç±»å‹è¿˜æ˜¯é€šä¿¡ç±»å‹
+	SessionStatus	m_nSessionStatus;			//ä¼šè¯çŠ¶æ€
 	char			m_szClientAddress[enmMaxIPAddressLength];
-	uint32_t		m_nPeerAddress;				//¶Ô¶Ëip
-	uint16_t		m_nPeerPort;				//¶Ô¶Ëport
-	uint32_t		m_nLocalAddress;			//¼àÌıµØÖ·
-	uint16_t		m_nLocalPort;				//¼àÌı¶Ë¿Ú
-	time_t			m_nCreateTime;				//Á¬½Ó´´½¨Ê±¼ä
-	time_t			m_nLastRecvTime;			//×î½üÒ»´Î´Ó¶Ô¶Ë½ÓÊÕÊı¾İµÄÊ±¼ä
-	time_t			m_nLastSendTime;			//×î½üÒ»´Î·¢¸ø¶Ô¶ËÊı¾İµÄÊ±¼ä
-	int32_t			m_nTotalRecvBytes;			//ÊÕµ½µÄÊı¾İ´óĞ¡
-	int32_t			m_nTotalSendBytes;			//·¢ËÍµÄÊı¾İ´óĞ¡
-//	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//½ÓÊÕ»º³åÇø
-	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//·¢ËÍ»º´æ£¬ÔÚÌ×½Ó×ÖÒì³£»òÕßÏµÍ³·¢ËÍ»º³åÂúµÄÇé¿öÏÂ£¬Êı¾İ½«»á±»·Å½ø´Ë»º´æ
+	uint32_t		m_nPeerAddress;				//å¯¹ç«¯ip
+	uint16_t		m_nPeerPort;				//å¯¹ç«¯port
+	uint32_t		m_nLocalAddress;			//ç›‘å¬åœ°å€
+	uint16_t		m_nLocalPort;				//ç›‘å¬ç«¯å£
+	time_t			m_nCreateTime;				//è¿æ¥åˆ›å»ºæ—¶é—´
+	time_t			m_nLastRecvTime;			//æœ€è¿‘ä¸€æ¬¡ä»å¯¹ç«¯æ¥æ”¶æ•°æ®çš„æ—¶é—´
+	time_t			m_nLastSendTime;			//æœ€è¿‘ä¸€æ¬¡å‘ç»™å¯¹ç«¯æ•°æ®çš„æ—¶é—´
+	int32_t			m_nTotalRecvBytes;			//æ”¶åˆ°çš„æ•°æ®å¤§å°
+	int32_t			m_nTotalSendBytes;			//å‘é€çš„æ•°æ®å¤§å°
+//	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//æ¥æ”¶ç¼“å†²åŒº
+	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//å‘é€ç¼“å­˜ï¼Œåœ¨å¥—æ¥å­—å¼‚å¸¸æˆ–è€…ç³»ç»Ÿå‘é€ç¼“å†²æ»¡çš„æƒ…å†µä¸‹ï¼Œæ•°æ®å°†ä¼šè¢«æ”¾è¿›æ­¤ç¼“å­˜
 
 	CConnectTimer	*m_pConnectTimer;
 	CNetHandler		*m_pNetHandler;

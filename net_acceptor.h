@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_acceptor.h
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
@@ -16,20 +16,20 @@ NETEVENT_NAMESPACE_BEGIN
 class CAcceptor : public CSocket
 {
 public:
-	CAcceptor(CNetHandler *pNetHandler, IPacketParserFactory *pFactory, IIOHandler *pIOHandler);
+	EXPORT CAcceptor(CNetHandler *pNetHandler, IPacketParserFactory *pFactory, IIOHandler *pIOHandler);
 
-	int32_t Bind(const char *szLocalIP, uint16_t nPort);
+	EXPORT int32_t Bind(const char *szLocalIP, uint16_t nPort);
 
-	int32_t Bind(uint16_t nPort);
+	EXPORT int32_t Bind(uint16_t nPort);
 
 protected:
-	//¶ÁÊÂ¼ş»Øµ÷
+	//è¯»äº‹ä»¶å›è°ƒ
 	virtual int32_t OnRead(int32_t nErrorCode);
-	//Ğ´ÊÂ¼ş»Øµ÷
+	//å†™äº‹ä»¶å›è°ƒ
 	virtual int32_t OnWrite(int32_t nErrorCode);
-	//Òì³£ÊÂ¼ş»Øµ÷
+	//å¼‚å¸¸äº‹ä»¶å›è°ƒ
 	virtual int32_t OnError(int32_t nErrorCode);
-	//½ÓÊÕÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+	//æ¥æ”¶è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 	virtual int32_t OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress,
 			socklen_t nPeerAddressLen);
 

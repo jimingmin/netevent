@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_connection.h
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
@@ -18,30 +18,30 @@ class CConnection : public CSocket
 {
 public:
 	CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler);
-	//ÉèÖÃ½â°üÆ÷
+	//è®¾ç½®è§£åŒ…å™¨
 	void SetPacketParser(IPacketParser *pPacketParser);
 	IPacketParser *GetPacketParser();
-	//ÉèÖÃio´¦ÀíÆ÷
+	//è®¾ç½®ioå¤„ç†å™¨
 	void SetIOHandler(IIOHandler *pIOHandler);
 	IIOHandler *GetIOHandler();
 
 	virtual void Close(int32_t nCloseCode = 0);
-	//Ğ´ÈëÊı¾İ
+	//å†™å…¥æ•°æ®
 	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
-	//Ğ´Èëµ½µ×²ãbuf
+	//å†™å…¥åˆ°åº•å±‚buf
 	int32_t WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize);
 protected:
-	//¶ÁÊÂ¼ş»Øµ÷
+	//è¯»äº‹ä»¶å›è°ƒ
 	virtual int32_t OnRead(int32_t nErrorCode);
-	//Ğ´ÊÂ¼ş»Øµ÷
+	//å†™äº‹ä»¶å›è°ƒ
 	virtual int32_t OnWrite(int32_t nErrorCode);
-	//Òì³£ÊÂ¼ş»Øµ÷
+	//å¼‚å¸¸äº‹ä»¶å›è°ƒ
 	virtual int32_t OnError(int32_t nErrorCode);
-	//Á¬½Ó³É¹¦»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+	//è¿æ¥æˆåŠŸå›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 	virtual int32_t OnConnected();
-	//Á¬½Ó³¬Ê±»Øµ÷
+	//è¿æ¥è¶…æ—¶å›è°ƒ
 	virtual int32_t OnConnectTimeout();
-	//¶Ï¿ªÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©×ÊÔ´»ØÊÕµÄ¹¤×÷)
+	//æ–­å¼€è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›èµ„æºå›æ”¶çš„å·¥ä½œ)
 	virtual int32_t OnDisconnect(int32_t nCloseCode);
 
 protected:

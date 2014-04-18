@@ -1,9 +1,9 @@
-/*
- * net_thread.cpp
- *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
- *      Author: jimm
- */
+ï»¿/*
+* net_thread.cpp
+*
+*  Created on: 2013å¹´11æœˆ4æ—¥
+*      Author: jimm
+*/
 
 #include "net_api.h"
 #include "net_socket.h"
@@ -25,6 +25,14 @@ NETEVENT_NAMESPACE_BEGIN
 
 CNetHandler::CNetHandler()
 {
+#ifdef WIN32
+	WORD wVersionRequested;
+	WSADATA wsaData;
+	int32_t err;
+
+	wVersionRequested = MAKEWORD( 2, 2 );
+	err = WSAStartup( wVersionRequested, &wsaData );
+#endif
 	m_pReactor = NULL;
 	m_nReconnectTime = 10;
 	m_nLastConnectTime = 0;
@@ -32,7 +40,9 @@ CNetHandler::CNetHandler()
 
 CNetHandler::~CNetHandler()
 {
-
+#ifdef WIN32
+	WSACleanup();
+#endif
 }
 
 int32_t CNetHandler::CreateReactor(int32_t nReactorType/* = enmReactorType_Epoll*/)
@@ -43,7 +53,11 @@ int32_t CNetHandler::CreateReactor(int32_t nReactorType/* = enmReactorType_Epoll
 	}
 	else
 	{
+#ifdef WIN32
+		m_pReactor = new(nothrow) CSelect();
+#else
 		m_pReactor = new(nothrow) CEpoll();
+#endif
 	}
 
 	int32_t nRet = m_pReactor->Create(0xffff);
@@ -108,12 +122,12 @@ int32_t CNetHandler::Run()
 {
 	bool bHasData = false;
 
-	//ÏûÏ¢±Ã
+	//æ¶ˆæ¯æ³µ
 	if(MessagePump() > 0)
 	{
 		bHasData = true;
 	}
-	//´¦Àísocket³¬Ê±ÊÂ¼þ
+	//å¤„ç†socketè¶…æ—¶äº‹ä»¶
 	HandleTimeOutEvent();
 
 	return bHasData;
@@ -154,7 +168,7 @@ int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 	int32_t nSendBytes = 0;
 	if(pConnection->Send(pPacket->m_pNetPacket, pPacket->m_nNetPacketLen, nSendBytes) == S_OK)
 	{
-		//Ð´µ½Ñ­»·bufÁË
+		//å†™åˆ°å¾ªçŽ¯bufäº†
 		pConnection->WritedToLowerBuf(pPacket->m_pNetPacket, nSendBytes);
 	}
 	else

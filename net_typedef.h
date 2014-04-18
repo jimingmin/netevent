@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_typedef.h
  *
- *  Created on: 2013Äê11ÔÂ4ÈÕ
+ *  Created on: 2013å¹´11æœˆ4æ—¥
  *      Author: jimm
  */
 
@@ -20,31 +20,33 @@
 #include <fcntl.h>
 #endif
 
+#include "../common/common_typedef.h"
+
 
 #ifdef WIN32
 typedef SOCKET		SocketFD;
 enum
 {
-	enmInvalidSocketFD		= INVALID_SOCKET,		//ÎŞĞ§Ì×½Ó×Ö
+	enmInvalidSocketFD		= INVALID_SOCKET,		//æ— æ•ˆå¥—æ¥å­—
 };
 #else
 typedef int32_t			SocketFD;
 enum
 {
-	enmInvalidSocketFD		= -1,					//ÎŞĞ§Ì×½Ó×Ö
+	enmInvalidSocketFD		= -1,					//æ— æ•ˆå¥—æ¥å­—
 };
 #endif
 
 typedef uint32_t		SessionID;
 
-//Ì×½Ó×ÖÀàĞÍ
+//å¥—æ¥å­—ç±»å‹
 typedef enum enmSessionType
 {
-	enmSessionType_Listen				= 0,		//¼àÌıÌ×½Ó×Ö
-	enmSessionType_Communicate			= 1,		//Í¨ĞÅÌ×½Ó×Ö
+	enmSessionType_Listen				= 0,		//ç›‘å¬å¥—æ¥å­—
+	enmSessionType_Communicate			= 1,		//é€šä¿¡å¥—æ¥å­—
 } SessionType;
 
-//Ì×½Ó×ÖÁ¬½Ó×´Ì¬
+//å¥—æ¥å­—è¿æ¥çŠ¶æ€
 typedef enum enmSessionStatus
 {
 	enmSessionStatus_Closed				= 0,		//
@@ -57,22 +59,22 @@ typedef enum enmSessionStatus
 
 enum
 {
-	enmRecvBufferSize				= 0x00040000,		//½ÓÊÕ»º³åÇø´óĞ¡
-	enmSendBufferSize				= 0x00040000,		//·¢ËÍ»º³åÇø´óĞ¡
+	enmRecvBufferSize				= 0x00040000,		//æ¥æ”¶ç¼“å†²åŒºå¤§å°
+	enmSendBufferSize				= 0x00040000,		//å‘é€ç¼“å†²åŒºå¤§å°
 };
 
 
 enum
 {
-	enmMaxConnectCount					= 500,			//×î´óµÄÁ¬½ÓÊı
-	enmDefaultConnectionTimeout			= 1000,			//Ä¬ÈÏÁ¬½Ó³¬Ê±Ê±¼ä
+	enmMaxConnectCount					= 500,			//æœ€å¤§çš„è¿æ¥æ•°
+	enmDefaultConnectionTimeout			= 1000,			//é»˜è®¤è¿æ¥è¶…æ—¶æ—¶é—´
 };
 
 
 enum
 {
-	enmMaxMessageSize					= 0x40000,	//×î´óÏûÏ¢³¤¶È, 1024*256, 256k
-	enmMaxIPAddressLength				= 20,	//IPµØÖ·×î´ó³¤¶È
+	enmMaxMessageSize					= 0x40000,	//æœ€å¤§æ¶ˆæ¯é•¿åº¦, 1024*256, 256k
+	enmMaxIPAddressLength				= 20,	//IPåœ°å€æœ€å¤§é•¿åº¦
 	enmWaitTimeout						= 50,	//50(ms)
 };
 

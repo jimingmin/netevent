@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_acceptor.cpp
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
@@ -9,6 +9,12 @@
 #include "net_handler.h"
 #include "net_connection.h"
 #include "net_connmgt.h"
+#include "net_reactor.h"
+#include <time.h>
+
+#ifdef WIN32
+#pragma comment(lib, "Ws2_32.lib")
+#endif
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -25,15 +31,15 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 
 	if((m_nSessionType == enmSessionType_Listen) || (nPort > 0))
 	{
-		//ÉèÖÃÌ×½Ó×ÖÊôĞÔ
+		//è®¾ç½®å¥—æ¥å­—å±æ€§
 		int32_t op = 1;
-		int32_t ret = setsockopt(m_nSocketFD, SOL_SOCKET, SO_REUSEADDR, &op, sizeof(op));
+		int32_t ret = setsockopt(m_nSocketFD, SOL_SOCKET, SO_REUSEADDR, (char *)&op, sizeof(op));
 		if (0 != ret)
 		{
 			Close();
 			return E_SOCKETOPTION;
 		}
-		//Ìî³ä·şÎñÆ÷µØÖ·&¶Ë¿ÚĞÅÏ¢
+		//å¡«å……æœåŠ¡å™¨åœ°å€&ç«¯å£ä¿¡æ¯
 		struct sockaddr_in addr;
 		addr.sin_family = AF_INET;
 		if((NULL == szLocalIP) || (strlen(szLocalIP) == 0))
@@ -53,7 +59,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 			return E_SOCKETBIND;
 		}
 
-		//¿ªÊ¼¼àÌı
+		//å¼€å§‹ç›‘å¬
 		ret = listen(m_nSocketFD, SOMAXCONN);
 		if (0 != ret)
 		{
@@ -67,10 +73,10 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 		m_pNetHandler->RegistEvent(this, mask_read);
 	}
 
-	//ÉèÖÃÎª·Ç×èÈû
+	//è®¾ç½®ä¸ºéé˜»å¡
 	set_non_block(m_nSocketFD);
 
-	//¸üĞÂÌ×½Ó×ÖÀàĞÍºÍ×´Ì¬
+	//æ›´æ–°å¥—æ¥å­—ç±»å‹å’ŒçŠ¶æ€
 	m_nSessionType = enmSessionType_Listen;
 	m_nSessionStatus = enmSessionStatus_Opened;
 
@@ -82,25 +88,25 @@ int32_t CAcceptor::Bind(uint16_t nPort)
 	return Bind(NULL, nPort);
 }
 
-//¶ÁÊÂ¼ş»Øµ÷
+//è¯»äº‹ä»¶å›è°ƒ
 int32_t CAcceptor::OnRead(int32_t nErrorCode)
 {
 	return S_OK;
 }
 
-//Ğ´ÊÂ¼ş»Øµ÷
+//å†™äº‹ä»¶å›è°ƒ
 int32_t CAcceptor::OnWrite(int32_t nErrorCode)
 {
 	return S_OK;
 }
 
-//Òì³£ÊÂ¼ş»Øµ÷
+//å¼‚å¸¸äº‹ä»¶å›è°ƒ
 int32_t CAcceptor::OnError(int32_t nErrorCode)
 {
 	return S_OK;
 }
 
-//½ÓÊÕÁ¬½Ó»Øµ÷(ÖØÔØ´Ëº¯Êı£¬¿ÉÒÔÔÚÕâÀï×öĞ©Á¬½ÓĞÅÏ¢³õÊ¼»¯µÄ¹¤×÷)
+//æ¥æ”¶è¿æ¥å›è°ƒ(é‡è½½æ­¤å‡½æ•°ï¼Œå¯ä»¥åœ¨è¿™é‡Œåšäº›è¿æ¥ä¿¡æ¯åˆå§‹åŒ–çš„å·¥ä½œ)
 int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress,
 		socklen_t nPeerAddressLen)
 {

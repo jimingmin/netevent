@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_connector.cpp
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
@@ -12,6 +12,7 @@
 #include "net_connection.h"
 #include "net_errordef.h"
 #include "net_connmgt.h"
+#include "net_reactor.h"
 
 #include <errno.h>
 
@@ -39,20 +40,20 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTi
 
 	pConn->Open();
 
-	//¸üÐÂÌ×½Ó×ÖÀàÐÍºÍ×´Ì¬
+	//æ›´æ–°å¥—æŽ¥å­—ç±»åž‹å’ŒçŠ¶æ€
 	pConn->SetSessionType(enmSessionType_Communicate);
 
 	uint32_t nRet = S_OK;
 	do
 	{
-		//ÅÐ¶ÏÌ×½Ó×ÖÀàÐÍ
+		//åˆ¤æ–­å¥—æŽ¥å­—ç±»åž‹
 		if (enmSessionType_Communicate != pConn->GetSessionType())
 		{
 			nRet = E_SOCKETTYPE;
 			break;
 		}
 
-		//Ì×½Ó×ÖÊÇ·ñ´ò¿ª
+		//å¥—æŽ¥å­—æ˜¯å¦æ‰“å¼€
 		if ((enmInvalidSocketFD == pConn->GetSocketFD()) || (enmSessionStatus_Opened != pConn->GetSessionStatus()))
 		{
 			nRet = E_SOCKETNOTCREATED;
@@ -79,11 +80,15 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTi
 
 		pConn->SetConnectTimer(pConnTimer);
 
-		//Óë·þÎñÆ÷¶Ë½¨Á¢Á¬½Ó
+		//ä¸ŽæœåŠ¡å™¨ç«¯å»ºç«‹è¿žæŽ¥
 		int32_t ret = connect(pConn->GetSocketFD(), (const struct sockaddr*)&addr, sizeof(addr));
 		if (0 != ret)
 		{
+#ifdef WIN32
+			if (errno != WSAEINPROGRESS)
+#else
 			if (errno != EINPROGRESS)
+#endif
 			{
 				nRet = E_SOCKETCONNECT;
 				break;
@@ -99,7 +104,7 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTi
 		else
 		{
 			m_pNetHandler->RegistEvent(pConn, mask_read | mask_write);
-			//¸üÐÂÌ×½Ó×Ö×´Ì¬
+			//æ›´æ–°å¥—æŽ¥å­—çŠ¶æ€
 			pConn->SetSessionStatus(enmSessionStatus_Connected);
 
 			pConn->Connected();
@@ -119,19 +124,19 @@ CNetHandler *CConnector::GetNetHandler()
 	return m_pNetHandler;
 }
 
-//¶ÁÊÂ¼þ»Øµ÷
+//è¯»äº‹ä»¶å›žè°ƒ
 int32_t CConnector::OnRead(int32_t nErrorCode)
 {
 	return S_OK;
 }
 
-//Ð´ÊÂ¼þ»Øµ÷
+//å†™äº‹ä»¶å›žè°ƒ
 int32_t CConnector::OnWrite(int32_t nErrorCode)
 {
 	return S_OK;
 }
 
-//Òì³£ÊÂ¼þ»Øµ÷
+//å¼‚å¸¸äº‹ä»¶å›žè°ƒ
 int32_t CConnector::OnError(int32_t nErrorCode)
 {
 	return S_OK;

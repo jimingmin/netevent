@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_packet.h
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: Administrator
  */
 
@@ -10,6 +10,10 @@
 
 #include "net_namespace.h"
 #include "net_typedef.h"
+
+#ifdef WIN32
+#pragma warning(disable:4200)
+#endif
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -22,8 +26,8 @@ public:
 		m_nSessionID = 0;
 	}
 
-	uint32_t 		m_nNetPacketLen;	//²»°üº¬×ÔÉí4×Ö½ÚµÄ³¤¶È
-	SessionID		m_nSessionID;		//Á¬½ÓµÄÎ¨Ò»±êÊ¾
+	uint32_t 		m_nNetPacketLen;	//ä¸åŒ…å«è‡ªèº«4å­—èŠ‚çš„é•¿åº¦
+	SessionID		m_nSessionID;		//è¿æ¥çš„å”¯ä¸€æ ‡ç¤º
 	uint8_t			m_pNetPacket[0];
 };
 

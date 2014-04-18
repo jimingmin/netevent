@@ -1,4 +1,4 @@
-/*
+﻿/*
  * net_api.h
  *
  *  Created on: 2013��11��4��
@@ -9,6 +9,21 @@
 #define NET_API_H_
 
 #include <stdio.h>
+#include "net_typedef.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+int32_t set_non_block(SocketFD fd);
+
+char *inet_ntoa_f(uint32_t ip);
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #ifndef WIN32
 
@@ -29,31 +44,14 @@ enum enmSocketBlockFlag
 	enmSocketBlockFlag_nonblock = 1,
 };
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-int32_t set_non_block(int32_t fd);
-
-char *inet_ntoa_f(uint32_t ip);
-
-#ifdef __cplusplus
-}
-#endif
-
-
-
 #else
 
 /**
 define epoll data on windows platform
 */
-#include "common/common_typedef.h"
+#include "../common/common_typedef.h"
 
 typedef int socklen_t;
-
-int32_t set_non_block(int32_t fd);
 
 enum EPOLL_EVENTS
 {

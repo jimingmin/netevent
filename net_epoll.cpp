@@ -1,10 +1,11 @@
-/*
+﻿/*
  * net_epoll.cpp
  *
  *  Created on: 2013��11��4��
  *      Author: jimm
  */
 
+#ifdef unix
 
 #include "net_epoll.h"
 #include "net_socket.h"
@@ -213,4 +214,5 @@ int32_t CEpoll::HandleMessage(int32_t nWaitTimeout)
 
 NETEVENT_NAMESPACE_END
 
+#endif
 

@@ -1,7 +1,7 @@
-/*
+﻿/*
  * net_thread.h
  *
- *  Created on: 2013��11��4��
+ *  Created on: 2013年11月4日
  *      Author: jimm
  */
 
@@ -15,6 +15,7 @@
 #include "net_epoll.h"
 #include "net_queue.h"
 #include "../common/common_runnable.h"
+#include "../common/common_export.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -22,34 +23,35 @@ NETEVENT_NAMESPACE_BEGIN
 
 enum
 {
-	enmReactorType_Select		= 0x00,		//selectģʽ
-	enmReactorType_Epoll		= 0x01,		//epollģʽ
+	enmReactorType_Select		= 0x00,		//select模式
+	enmReactorType_Epoll		= 0x01,		//epoll模式
 };
 
+class IReactor;
 
 class CNetHandler : public IRunnable
 {
 public:
-	CNetHandler();
-	virtual ~CNetHandler();
+	EXPORT CNetHandler();
+	EXPORT virtual ~CNetHandler();
 
-	int32_t CreateReactor(int32_t nReacotType = enmReactorType_Epoll);
+	EXPORT int32_t CreateReactor(int32_t nReacotType = enmReactorType_Epoll);
 
-	int32_t DestoryReactor();
+	EXPORT int32_t DestoryReactor();
 
-	int32_t Run();
+	EXPORT int32_t Run();
 
-	IReactor *GetReactor();
+	EXPORT IReactor *GetReactor();
 
-	int32_t RegistEvent(CSocket *pSocket, uint32_t nEvents);
+	EXPORT int32_t RegistEvent(CSocket *pSocket, uint32_t nEvents);
 
-	int32_t RemoveEvent(CSocket *pSocket, uint32_t nEvents);
+	EXPORT int32_t RemoveEvent(CSocket *pSocket, uint32_t nEvents);
 
-	int32_t DeleteEvent(CSocket *pSocket);
+	EXPORT int32_t DeleteEvent(CSocket *pSocket);
 
-	void PushPacket(NetPacket *pPacket);
+	EXPORT void PushPacket(NetPacket *pPacket);
 
-	int32_t SendPacket(NetPacket *pPacket);
+	EXPORT int32_t SendPacket(NetPacket *pPacket);
 protected:
 	int32_t MessagePump();
 

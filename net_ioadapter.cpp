@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_ioadapter.cpp
  *
- *  Created on: 2013Äê12ÔÂ17ÈÕ
+ *  Created on: 2013å¹´12æœˆ17æ—¥
  *      Author: jimm
  */
 

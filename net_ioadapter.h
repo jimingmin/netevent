@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_ioadapter.h
  *
- *  Created on: 2013Äê12ÔÂ17ÈÕ
+ *  Created on: 2013å¹´12æœˆ17æ—¥
  *      Author: jimm
  */
 
@@ -16,17 +16,17 @@ NETEVENT_NAMESPACE_BEGIN
 class CIOHandlerAdapter : public IIOHandler
 {
 public:
-	virtual int32_t OnOpened(IIOSession *pIoSession);
+	EXPORT virtual int32_t OnOpened(IIOSession *pIoSession);
 
-	virtual int32_t OnRecved(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize);
+	EXPORT virtual int32_t OnRecved(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize);
 
-	virtual int32_t OnSent(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize);
+	EXPORT virtual int32_t OnSent(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize);
 
-	virtual int32_t OnClosed(IIOSession *pIoSession);
+	EXPORT virtual int32_t OnClosed(IIOSession *pIoSession);
 
-	virtual int32_t OnError(IIOSession *pIoSession);
+	EXPORT virtual int32_t OnError(IIOSession *pIoSession);
 
-	virtual int32_t OnTimeout(IIOSession *pIoSession);
+	EXPORT virtual int32_t OnTimeout(IIOSession *pIoSession);
 };
 
 NETEVENT_NAMESPACE_END

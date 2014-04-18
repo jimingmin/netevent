@@ -1,4 +1,4 @@
-/*
+﻿/*
  * net_select.cpp
  *
  *  Created on: 2013��11��4��
@@ -109,7 +109,7 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 
 		FD_SET(nSocketFD, &m_stExceptSet);
 
-		if(nSocketFD > nMaxFD)
+		if(nSocketFD > (uint32_t)nMaxFD)
 		{
 			nMaxFD = nSocketFD;
 		}

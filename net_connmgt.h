@@ -1,7 +1,7 @@
-/*
+ï»¿/*
  * net_connmgt.h
  *
- *  Created on: 2013Äê12ÔÂ16ÈÕ
+ *  Created on: 2013å¹´12æœˆ16æ—¥
  *      Author: jimm
  */
 
