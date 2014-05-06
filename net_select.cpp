@@ -86,7 +86,7 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 	int32_t nMaxFD = 0;
 
 	SocketMap::iterator it = m_stSocketMap.begin();
-	for(; it != m_stSocketMap.end(); ++it)
+	for(; it != m_stSocketMap.end(); )
 	{
 		CSocket *pSocket = it->second;
 		uint32_t nIOEvents = pSocket->GetIOEvents();
@@ -113,6 +113,8 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 		{
 			nMaxFD = nSocketFD;
 		}
+
+		++it;
 	}
 
 	if(nMaxFD++ <= 0)

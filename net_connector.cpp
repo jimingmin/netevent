@@ -5,6 +5,7 @@
  *      Author: jimm
  */
 
+#include "../common/common_api.h"
 #include "net_connector.h"
 #include "net_typedef.h"
 #include "net_timer.h"
@@ -13,8 +14,8 @@
 #include "net_errordef.h"
 #include "net_connmgt.h"
 #include "net_reactor.h"
+#include "net_api.h"
 
-#include <errno.h>
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -85,9 +86,9 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTi
 		if (0 != ret)
 		{
 #ifdef WIN32
-			if (errno != WSAEINPROGRESS)
+				if((ErrorNo() != WSAEINPROGRESS) && (ErrorNo() != WSAEWOULDBLOCK))
 #else
-			if (errno != EINPROGRESS)
+				if(ErrorNo() != EINPROGRESS)
 #endif
 			{
 				nRet = E_SOCKETCONNECT;

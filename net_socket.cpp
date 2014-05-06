@@ -5,6 +5,7 @@
  *      Author: jimm
  */
 
+#include "../common/common_api.h"
 #include "net_socket.h"
 #include "net_eventid.h"
 #include "net_handler.h"
@@ -298,7 +299,11 @@ int32_t CSocket::SendRestData()
 			}
 			//剩余数据写回缓存
 			m_stSendBuffer.WriteToHead(&arrPacketBuf[nRewriteIndex], nRealSize - nRewriteIndex);
-			if(errno != EAGAIN)
+#ifdef WIN32
+			if((ErrorNo() != EAGAIN) && (ErrorNo() != WSAEWOULDBLOCK))
+#else
+			if(ErrorNo() != EAGAIN)
+#endif
 			{
 				nSendBytes = -1;
 				//break;
@@ -487,7 +492,11 @@ int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 		}
 		if(nRecvBytes < nSize)
 		{
-			if(errno != EAGAIN)
+#ifdef WIN32
+			if((ErrorNo() != EAGAIN) && (ErrorNo() != WSAEWOULDBLOCK))
+#else
+			if(ErrorNo() != EAGAIN)
+#endif
 			{
 				return E_SOCKETERROR;
 			}
@@ -499,7 +508,11 @@ int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 		//连接已断开
 		return E_SOCKETDISCONNECTED;
 	}
-	else if (EAGAIN != errno)
+#ifdef WIN32
+	else if((ErrorNo() != EAGAIN) && (ErrorNo() != WSAEWOULDBLOCK))
+#else
+	else if(ErrorNo() != EAGAIN)
+#endif
 	{
 		//接收出错
 		return E_SOCKETERROR;
@@ -553,7 +566,11 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 				m_stSendBuffer.WriteToHead(&arrSendBuf[nRewriteIndex], nRealRestSize - nRewriteIndex);
 
 				ChangeWriteEvent();
-				if(errno != EAGAIN)
+#ifdef WIN32
+				if((ErrorNo() != EAGAIN) && (ErrorNo() != WSAEWOULDBLOCK))
+#else
+				if(ErrorNo() != EAGAIN)
+#endif
 				{
 					return E_SOCKETERROR;
 				}
@@ -585,7 +602,11 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 		m_stSendBuffer.WriteToHead(&pBuffer[nRewriteIndex], nLength - nRewriteIndex);
 
 		ChangeWriteEvent();
-		if(errno != EAGAIN)
+#ifdef WIN32
+		if((ErrorNo() != EAGAIN) && (ErrorNo() != WSAEWOULDBLOCK))
+#else
+		if(ErrorNo() != EAGAIN)
+#endif
 		{
 			return E_SOCKETERROR;
 		}

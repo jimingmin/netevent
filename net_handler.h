@@ -31,6 +31,7 @@ class IReactor;
 
 class CNetHandler : public IRunnable
 {
+	friend class CConnection;
 public:
 	EXPORT CNetHandler();
 	EXPORT virtual ~CNetHandler();
@@ -49,10 +50,11 @@ public:
 
 	EXPORT int32_t DeleteEvent(CSocket *pSocket);
 
-	EXPORT void PushPacket(NetPacket *pPacket);
-
-	EXPORT int32_t SendPacket(NetPacket *pPacket);
 protected:
+	void PushPacket(NetPacket *pPacket);
+
+	int32_t SendPacket(NetPacket *pPacket);
+
 	int32_t MessagePump();
 
 	int32_t HandleTimeOutEvent();

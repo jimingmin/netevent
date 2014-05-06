@@ -13,12 +13,12 @@
 #include "net_select.h"
 #include "net_epoll.h"
 #include "net_connmgt.h"
+#include "net_api.h"
 #include "../common/common_datetime.h"
 #include "../common/common_memmgt.h"
 
 #ifndef WIN32
 #include<cstring>
-#include <errno.h>
 #endif
 
 NETEVENT_NAMESPACE_BEGIN

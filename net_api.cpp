@@ -17,6 +17,7 @@
 
 #else
 
+#include <errno.h>
 #include "net_api.h"
 
 int epoll_create(int __size)
