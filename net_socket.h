@@ -61,6 +61,7 @@ public:
 		m_pConnectTimer = NULL;
 		m_pNetHandler = NULL;
 		m_nIOEvents = 0;
+		m_pParam = NULL;
 	}
 	//设置会话ID,全局唯一
 	virtual void SetSessionID(SessionID nID);
@@ -96,6 +97,10 @@ public:
 	virtual void SetLocalPort(uint16_t nPort);
 	//获取本地端口
 	virtual uint16_t GetLocalPort();
+	//设置附加参数
+	virtual void SetParamPtr(void *ptr);
+	//获取附加参数
+	virtual void *GetParamPtr();
 
 	virtual int32_t ReadEvent();
 
@@ -182,6 +187,7 @@ protected:
 	CConnectTimer	*m_pConnectTimer;
 	CNetHandler		*m_pNetHandler;
 	uint32_t		m_nIOEvents;
+	void 			*m_pParam;
 };
 
 NETEVENT_NAMESPACE_END

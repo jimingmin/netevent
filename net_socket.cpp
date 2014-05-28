@@ -135,6 +135,17 @@ uint16_t CSocket::GetLocalPort()
 	return m_nLocalPort;
 }
 
+//设置附加参数
+void CSocket::SetParamPtr(void *ptr)
+{
+	m_pParam = ptr;
+}
+//获取附加参数
+void *CSocket::GetParamPtr()
+{
+	return m_pParam;
+}
+
 void CSocket::SetCreateTime(time_t nCreateTime)
 {
 	m_nCreateTime = nCreateTime;
@@ -587,7 +598,8 @@ int32_t CSocket::Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nS
 	{
 		nSendBytes = nLength;
 		ChangeWriteEvent();
-		return m_stSendBuffer.Write(pBuffer, nLength);
+		m_stSendBuffer.Write(pBuffer, nLength);
+		return S_OK;
 	}
 
 	nSendBytes = nWrite(pBuffer, nLength);

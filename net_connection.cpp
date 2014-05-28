@@ -56,13 +56,13 @@ void CConnection::Close(int32_t nCloseCode)
 
 int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 {
-	uint8_t *pMem = MALLOC(sizeof(NetPacket) + nBufSize + 1);
+	uint8_t *pMem = MALLOC(sizeof(NetPacket) + nBufSize);
 
 	NetPacket *pPacket = new(pMem) NetPacket();
-	pPacket->m_nNetPacketLen = nBufSize + 1;
+	pPacket->m_nNetPacketLen = nBufSize;
 	pPacket->m_nSessionID = m_nSessionID;
 	memcpy(pPacket->m_pNetPacket, pBuf, nBufSize);
-	pPacket->m_pNetPacket[nBufSize] = '\0';//主要是针对消息是字符串的包，增加安全性
+	//pPacket->m_pNetPacket[nBufSize] = '\0';//主要是针对消息是字符串的包，增加安全性
 
 	m_pNetHandler->PushPacket(pPacket);
 
@@ -79,29 +79,40 @@ int32_t CConnection::WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize)
 //读事件回调
 int32_t CConnection::OnRead(int32_t nErrorCode)
 {
+	int32_t nBufSize = 0;
 	uint8_t arrBuf[enmMaxMessageSize];
 
+	if(m_stRecvBuffer.Size() > 0)
+	{
+		nBufSize = m_stRecvBuffer.Read(arrBuf, sizeof(arrBuf));
+	}
 	int32_t nCloseCode = 0;
 	int32_t nRecvBytes = 0;
-	int32_t nRet = Recv(arrBuf, sizeof(arrBuf), nRecvBytes);
+	int32_t nRet = Recv(&arrBuf[nBufSize], sizeof(arrBuf) - nBufSize, nRecvBytes);
 	if(nRet != S_OK)
 	{
 		nCloseCode = nRet;
 	}
 
+	nRecvBytes += nBufSize;
+
 	if(nRecvBytes > 0)
 	{
-		m_pPacketParser->InputData(arrBuf, nRecvBytes);
+		//m_pPacketParser->InputData(arrBuf, nRecvBytes);
+		int32_t nOffset = 0;
 		//提取消息包
 		do
 		{
 			int32_t nPacketSize = 0;
 			uint8_t arrPacket[enmMaxMessageSize];
-			m_pPacketParser->Parser(arrPacket, nPacketSize);
+			m_pPacketParser->Parser(&arrBuf[nOffset], nRecvBytes - nOffset, arrPacket, nPacketSize);
 			if(nPacketSize <= 0)
 			{
+				m_stRecvBuffer.Write(&arrBuf[nOffset], nRecvBytes - nOffset);
 				break;
 			}
+
+			nOffset += nPacketSize;
 
 			m_pIOHandler->OnRecved(this, arrPacket, nPacketSize);
 			if(m_nSessionStatus != enmSessionStatus_Connected)

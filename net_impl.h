@@ -52,6 +52,10 @@ public:
 	virtual uint32_t GetLocalAddress() = 0;
 	//获取本地端口
 	virtual uint16_t GetLocalPort() = 0;
+	//设置附加参数
+	virtual void SetParamPtr(void *ptr) = 0;
+	//获取附加参数
+	virtual void *GetParamPtr() = 0;
 
 	virtual int32_t ReadEvent() = 0;
 
@@ -77,9 +81,16 @@ class IPacketParser : public CObject
 public:
 	virtual ~IPacketParser(){};
 
-	virtual void InputData(uint8_t *pBuf, int32_t nSize) = 0;
+	//virtual void InputData(uint8_t *pBuf, int32_t nSize) = 0;
 
-	virtual int32_t Parser(uint8_t arrPacket[], int32_t &nPacketSize) = 0;
+	/*
+	 * 返回值：成功解析出来的包的大小，若buf数据不够解析出一个包则返回0
+	 * arrBuf：待解析的buf
+	 * nBufSize：arrBuf的大小
+	 * arrPacket：成功解析出来的包所存放的buf
+	 * nPacketSize：成功解析出来的包的大小
+	 */
+	virtual int32_t Parser(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t &nPacketSize) = 0;
 };
 
 class IPacketParserFactory

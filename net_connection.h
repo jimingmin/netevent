@@ -45,6 +45,7 @@ protected:
 	virtual int32_t OnDisconnect(int32_t nCloseCode);
 
 protected:
+	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
 	IPacketParser			*m_pPacketParser;
 	IIOHandler				*m_pIOHandler;
 };
