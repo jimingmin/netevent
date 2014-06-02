@@ -20,6 +20,11 @@ CConnection::CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser,
 	m_pIOHandler = pIOHandler;
 }
 
+int32_t CConnection::GetSize()
+{
+	return sizeof(*this);
+}
+
 void CConnection::SetPacketParser(IPacketParser *pPacketParser)
 {
 	m_pPacketParser = pPacketParser;

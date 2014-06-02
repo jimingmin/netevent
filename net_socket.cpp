@@ -17,12 +17,12 @@ NETEVENT_NAMESPACE_BEGIN
 
 CSocket::CSocket()
 {
-	Reset();
+	Init();
 }
 
 CSocket::CSocket(CNetHandler *pNetHandler)
 {
-	Reset();
+	Init();
 	m_pNetHandler = pNetHandler;
 }
 
@@ -32,6 +32,41 @@ CSocket::~CSocket()
 	{
 		Close(SYS_EVENT_CONN_CONFLICT);
 	}
+}
+
+int32_t CSocket::Init()
+{
+	m_nSessionID = 0;
+	m_nSocketFD = enmInvalidSocketFD;
+	m_nSessionType = enmSessionType_Communicate;
+	m_nSessionStatus = enmSessionStatus_Closed;
+	memset(m_szClientAddress, 0, sizeof(m_szClientAddress));
+	m_nPeerAddress = 0;
+	m_nPeerPort = 0;
+	m_nLocalAddress = 0;
+	m_nLocalPort = 0;
+	m_nCreateTime = 0;
+	m_nTotalRecvBytes = 0;
+	m_nLastRecvTime = 0;
+	m_nTotalSendBytes = 0;
+	m_nLastSendTime = 0;
+	m_stSendBuffer.Reset();
+	m_pConnectTimer = NULL;
+	m_pNetHandler = NULL;
+	m_nIOEvents = 0;
+	m_pParam = NULL;
+
+	return 0;
+}
+
+int32_t CSocket::Uninit()
+{
+	return Init();
+}
+
+int32_t CSocket::GetSize()
+{
+	return sizeof(*this);
 }
 
 //设置会话ID,全局唯一
@@ -367,7 +402,7 @@ void CSocket::Close(int32_t nCloseCode)
 #endif
 		m_nSocketFD = enmInvalidSocketFD;
 
-		Clear();
+		Init();
 	}
 }
 

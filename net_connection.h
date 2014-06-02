@@ -18,6 +18,8 @@ class CConnection : public CSocket
 {
 public:
 	CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler);
+
+	virtual int32_t GetSize();
 	//设置解包器
 	void SetPacketParser(IPacketParser *pPacketParser);
 	IPacketParser *GetPacketParser();

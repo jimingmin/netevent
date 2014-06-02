@@ -28,8 +28,8 @@ CConnectTimer *CConnectTimerMgt::CreateConnectTimer(CSocket *pSocket, ConnectTim
 	}
 	pTimer->pSocket = pSocket;
 	pTimer->pTimerProc = pTimerProc;
-	pTimer->m_nStartTime = CDateTime::CurrentDateTime().Millisecond();
-	pTimer->m_nEndTime = CDateTime::CurrentDateTime().Millisecond() + nTimeOut;
+	pTimer->m_nStartTime = CTimeValue::CurrentTime().Milliseconds();
+	pTimer->m_nEndTime = CTimeValue::CurrentTime().Milliseconds() + nTimeOut;
 
 	m_stConnectTimerList.push_back(pTimer);
 

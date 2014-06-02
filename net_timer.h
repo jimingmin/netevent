@@ -9,7 +9,7 @@
 #define NET_TIMER_H_
 
 #include "net_namespace.h"
-#include "../common/common_singleton.h"
+#include "../common/common_object.h"
 
 #include <list>
 
@@ -27,15 +27,26 @@ class CConnectTimer
 public:
 	CConnectTimer()
 	{
-		Reset();
+		Init();
 	}
 
-	void Reset()
+	virtual int32_t Init()
 	{
 		pSocket = NULL;
 		pTimerProc = NULL;
 		m_nStartTime = 0;
 		m_nEndTime = 0;
+		return 0;
+	}
+
+	virtual int32_t Uninit()
+	{
+		return 0;
+	}
+
+	virtual int32_t GetSize()
+	{
+		return sizeof(*this);
 	}
 
 	CSocket				*pSocket;

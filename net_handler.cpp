@@ -186,7 +186,7 @@ int32_t CNetHandler::HandleTimeOutEvent()
 	for(int32_t i = 0; i < nTimerCount; ++i)
 	{
 		CConnectTimer *pTimer = g_ConnectTimerMgt.GetFirstConnectTimer();
-		if(pTimer->m_nEndTime > CDateTime::CurrentDateTime().Millisecond())
+		if(pTimer->m_nEndTime > CTimeValue::CurrentTime().Milliseconds())
 		{
 			continue;
 		}

@@ -35,34 +35,12 @@ public:
 	CSocket(CNetHandler *pNetHandler);
 	virtual ~CSocket();
 
-	virtual void Reset()
-	{
-		Clear();
-	}
+	virtual int32_t Init();
 
-	//子类socket如果需要重置数据成员，最好派生此函数
-	virtual void Clear()
-	{
-		m_nSessionID = 0;
-		m_nSocketFD = enmInvalidSocketFD;
-		m_nSessionType = enmSessionType_Communicate;
-		m_nSessionStatus = enmSessionStatus_Closed;
-		memset(m_szClientAddress, 0, sizeof(m_szClientAddress));
-		m_nPeerAddress = 0;
-		m_nPeerPort = 0;
-		m_nLocalAddress = 0;
-		m_nLocalPort = 0;
-		m_nCreateTime = 0;
-		m_nTotalRecvBytes = 0;
-		m_nLastRecvTime = 0;
-		m_nTotalSendBytes = 0;
-		m_nLastSendTime = 0;
-		m_stSendBuffer.Reset();
-		m_pConnectTimer = NULL;
-		m_pNetHandler = NULL;
-		m_nIOEvents = 0;
-		m_pParam = NULL;
-	}
+	virtual int32_t Uninit();
+
+	virtual int32_t GetSize();
+
 	//设置会话ID,全局唯一
 	virtual void SetSessionID(SessionID nID);
 	//获取会话ID,全局唯一
