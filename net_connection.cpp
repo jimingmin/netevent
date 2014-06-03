@@ -49,9 +49,9 @@ void CConnection::Close(int32_t nCloseCode)
 {
 	if(g_ConnMgt.UnregistConnection(this))
 	{
-		g_ConnMgt.DestroyConnection(this);
-
 		CSocket::Close(nCloseCode);
+
+		g_ConnMgt.DestroyConnection(this, m_pPacketParser);
 
 		m_pNetHandler = NULL;
 		m_pPacketParser = NULL;

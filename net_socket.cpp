@@ -402,7 +402,7 @@ void CSocket::Close(int32_t nCloseCode)
 #endif
 		m_nSocketFD = enmInvalidSocketFD;
 
-		Init();
+		Uninit();
 	}
 }
 

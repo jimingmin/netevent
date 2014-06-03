@@ -27,7 +27,7 @@ class CConnMgt
 public:
 	CConnection *CreateConnection(CNetHandler *pNetHandler, IPacketParserFactory *pPacketParserFactory, IIOHandler *pIOHandler);
 
-	void DestroyConnection(CConnection *pConn);
+	void DestroyConnection(CConnection *pConn, IPacketParser *pPacketParser);
 
 	void RegistConnection(CConnection *pConn);
 

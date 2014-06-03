@@ -42,12 +42,12 @@ CConnection *CConnMgt::CreateConnection(CNetHandler *pNetHandler, IPacketParserF
 	return pConn;
 }
 
-void CConnMgt::DestroyConnection(CConnection *pConn)
+void CConnMgt::DestroyConnection(CConnection *pConn, IPacketParser *pPacketParser)
 {
 	ParserConnMap::iterator it = m_stParserConnMap.find(pConn);
 	if(it != m_stParserConnMap.end())
 	{
-		m_stParserConnMap[pConn]->Destory(pConn->GetPacketParser());
+		m_stParserConnMap[pConn]->Destory(pPacketParser);
 		m_stParserConnMap.erase(it);
 	}
 	m_stUnusedConnList.push_back(pConn);
