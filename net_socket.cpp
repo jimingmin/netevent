@@ -170,6 +170,36 @@ uint16_t CSocket::GetLocalPort()
 	return m_nLocalPort;
 }
 
+//获取连接创建时间
+time_t CSocket::GetCreateTime()
+{
+	return m_nCreateTime;
+}
+
+//获取最后一次接收数据时间
+time_t CSocket::GetLastRecvTime()
+{
+	return m_nLastRecvTime;
+}
+
+//获取最后一次发送数据时间
+time_t CSocket::GetLastSendTime()
+{
+	return m_nLastSendTime;
+}
+
+//获取接收的总数据字节数
+uint64_t CSocket::GetTotalRecvBytes()
+{
+	return m_nTotalRecvBytes;
+}
+
+//获取发送的总数据字节数
+uint64_t CSocket::GetTotalSendBytes()
+{
+	return m_nTotalSendBytes;
+}
+
 //设置附加参数
 void CSocket::SetParamPtr(void *ptr)
 {

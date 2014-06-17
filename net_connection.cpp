@@ -15,6 +15,8 @@ NETEVENT_NAMESPACE_BEGIN
 
 CConnection::CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler)
 {
+	m_stRecvBuffer.Reset();
+
 	m_pNetHandler = pNetHandler;
 	m_pPacketParser = pPacketParser;
 	m_pIOHandler = pIOHandler;
@@ -52,6 +54,8 @@ void CConnection::Close(int32_t nCloseCode)
 		CSocket::Close(nCloseCode);
 
 		g_ConnMgt.DestroyConnection(this, m_pPacketParser);
+
+		m_stRecvBuffer.Reset();
 
 		m_pNetHandler = NULL;
 		m_pPacketParser = NULL;

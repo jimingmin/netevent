@@ -52,6 +52,16 @@ public:
 	virtual uint32_t GetLocalAddress() = 0;
 	//获取本地端口
 	virtual uint16_t GetLocalPort() = 0;
+	//获取连接创建时间
+	virtual time_t GetCreateTime() = 0;
+	//获取最后一次接收数据时间
+	virtual time_t GetLastRecvTime() = 0;
+	//获取最后一次发送数据时间
+	virtual time_t GetLastSendTime() = 0;
+	//获取接收的总数据字节数
+	virtual uint64_t GetTotalRecvBytes() = 0;
+	//获取发送的总数据字节数
+	virtual uint64_t GetTotalSendBytes() = 0;
 	//设置附加参数
 	virtual void SetParamPtr(void *ptr) = 0;
 	//获取附加参数

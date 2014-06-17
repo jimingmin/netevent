@@ -75,6 +75,16 @@ public:
 	virtual void SetLocalPort(uint16_t nPort);
 	//获取本地端口
 	virtual uint16_t GetLocalPort();
+	//获取连接创建时间
+	virtual time_t GetCreateTime();
+	//获取最后一次接收数据时间
+	virtual time_t GetLastRecvTime();
+	//获取最后一次发送数据时间
+	virtual time_t GetLastSendTime();
+	//获取接收的总数据字节数
+	virtual uint64_t GetTotalRecvBytes();
+	//获取发送的总数据字节数
+	virtual uint64_t GetTotalSendBytes();
 	//设置附加参数
 	virtual void SetParamPtr(void *ptr);
 	//获取附加参数
@@ -157,8 +167,8 @@ protected:
 	time_t			m_nCreateTime;				//连接创建时间
 	time_t			m_nLastRecvTime;			//最近一次从对端接收数据的时间
 	time_t			m_nLastSendTime;			//最近一次发给对端数据的时间
-	int32_t			m_nTotalRecvBytes;			//收到的数据大小
-	int32_t			m_nTotalSendBytes;			//发送的数据大小
+	uint64_t		m_nTotalRecvBytes;			//收到的数据大小
+	uint64_t		m_nTotalSendBytes;			//发送的数据大小
 //	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
 	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//发送缓存，在套接字异常或者系统发送缓冲满的情况下，数据将会被放进此缓存
 
