@@ -26,9 +26,9 @@ CConnector::CConnector(CNetHandler *pNetHandler, IPacketParserFactory *pFactory,
 	m_pIOHandler = pIOHandler;
 }
 
-int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTimeout/* = 3000*/)
+int32_t CConnector::Connect(const char *szRemoteAddr, uint16_t nPort, uint32_t nTimeout/* = 3000*/)
 {
-	if (NULL == szRemoteIP)
+	if (NULL == szRemoteAddr)
 	{
 		return E_REMOTEIP;
 	}
@@ -38,6 +38,20 @@ int32_t CConnector::Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTi
 	{
 		return E_NULLPOINTER;
 	}
+
+	struct hostent *pHostEnt = gethostbyname(szRemoteAddr);
+	if(pHostEnt == NULL)
+	{
+		return E_NULLPOINTER;
+	}
+
+	if(pHostEnt->h_addr_list[0] == NULL)
+	{
+		return E_NULLPOINTER;
+	}
+
+	struct in_addr nIPAddr = *(struct in_addr *)pHostEnt->h_addr_list[0];
+	char *szRemoteIP = inet_ntoa(nIPAddr);
 
 	pConn->Open();
 

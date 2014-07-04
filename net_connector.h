@@ -22,7 +22,7 @@ class CConnector : public CSocket
 public:
 	EXPORT CConnector(CNetHandler *pNetHandler, IPacketParserFactory *pFactory, IIOHandler *pIOHandler);
 
-	EXPORT int32_t Connect(const char *szRemoteIP, uint16_t nPort, uint32_t nTimeout = 3000);
+	EXPORT int32_t Connect(const char *szRemoteAddr, uint16_t nPort, uint32_t nTimeout = 3000);
 
 	EXPORT CNetHandler *GetNetHandler();
 protected:
