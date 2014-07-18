@@ -15,7 +15,7 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-class IIOSession : public CObject
+class IIOSession : public CBaseObject
 {
 public:
 	virtual ~IIOSession(){};
@@ -86,7 +86,7 @@ public:
 	virtual int32_t Send(const uint8_t *pBuffer, const int32_t nLength, int32_t& nSendBytes) = 0;
 };
 
-class IPacketParser : public CObject
+class IPacketParser : public CBaseObject
 {
 public:
 	virtual ~IPacketParser(){};

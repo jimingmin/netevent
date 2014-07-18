@@ -18,7 +18,7 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-class NetPacket : public CObject
+class NetPacket : public CBaseObject
 {
 public:
 	NetPacket()

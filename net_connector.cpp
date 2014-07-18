@@ -15,7 +15,9 @@
 #include "net_connmgt.h"
 #include "net_reactor.h"
 #include "net_api.h"
-
+#ifndef WIN32
+#include <netdb.h>
+#endif
 
 NETEVENT_NAMESPACE_BEGIN
 

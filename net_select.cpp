@@ -107,7 +107,7 @@ int32_t CSelect::HandleMessage(int32_t nWaitTimeout)
 			FD_SET(nSocketFD, &m_stWriteSet);
 		}
 
-		FD_SET(nSocketFD, &m_stExceptSet);
+		//FD_SET(nSocketFD, &m_stExceptSet);
 
 		if(nSocketFD > (uint32_t)nMaxFD)
 		{
