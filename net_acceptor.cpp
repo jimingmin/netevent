@@ -110,7 +110,8 @@ int32_t CAcceptor::OnError(int32_t nErrorCode)
 int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress,
 		socklen_t nPeerAddressLen)
 {
-	CConnection *pConnection = g_ConnMgt.CreateConnection(m_pNetHandler, m_pPacketParserFactory, m_pIOHandler);
+	CConnMgt &stConnMgt = m_pNetHandler->GetConnMgt();
+	CConnection *pConnection = stConnMgt.CreateConnection(m_pNetHandler, m_pPacketParserFactory, m_pIOHandler);
 	pConnection->SetSocketFD(nAcceptFD);
 	pConnection->SetSessionStatus(enmSessionStatus_Connected);
 	pConnection->SetPeerAddress((uint32_t)stPeerAddress.sin_addr.s_addr);
@@ -119,7 +120,7 @@ int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress
 
 	set_non_block(nAcceptFD);
 
-	g_ConnMgt.RegistConnection(pConnection);
+	stConnMgt.RegistConnection(pConnection);
 
 	m_pNetHandler->RegistEvent(pConnection, mask_read | mask_write);
 	m_pIOHandler->OnOpened(pConnection);

@@ -436,6 +436,12 @@ void CSocket::Close(int32_t nCloseCode)
 	}
 }
 
+//异步关闭
+void CSocket::AsyncClose(int32_t nCloseCode)
+{
+	ASSERT(1);
+}
+
 //与服务端建立连接
 int32_t CSocket::Connect(const char* szRemoteIP, uint16_t nPort)
 {
@@ -453,7 +459,7 @@ int32_t CSocket::ConnectTimeout()
 {
 	if(m_pConnectTimer != NULL)
 	{
-		g_ConnectTimerMgt.DestroyConnectTimer(m_pConnectTimer);
+		m_pNetHandler->GetConnectTimerMgt().DestroyConnectTimer(m_pConnectTimer);
 		m_pConnectTimer = NULL;
 	}
 
@@ -479,7 +485,7 @@ int32_t CSocket::Connected()
 {
 	if(m_pConnectTimer != NULL)
 	{
-		g_ConnectTimerMgt.DestroyConnectTimer(m_pConnectTimer);
+		m_pNetHandler->GetConnectTimerMgt().DestroyConnectTimer(m_pConnectTimer);
 		m_pConnectTimer = NULL;
 	}
 
@@ -522,7 +528,7 @@ int32_t CSocket::Disconnected(int32_t nCloseCode)
 {
 	if(m_pConnectTimer != NULL)
 	{
-		g_ConnectTimerMgt.DestroyConnectTimer(m_pConnectTimer);
+		m_pNetHandler->GetConnectTimerMgt().DestroyConnectTimer(m_pConnectTimer);
 		m_pConnectTimer = NULL;
 	}
 

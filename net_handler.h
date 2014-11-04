@@ -13,9 +13,13 @@
 #include "net_errordef.h"
 #include "net_socket.h"
 #include "net_epoll.h"
-#include "net_queue.h"
+#include "net_closeevent.h"
+#include "net_connmgt.h"
 #include "../common/common_runnable.h"
 #include "../common/common_export.h"
+
+#include <list>
+using namespace std;
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -50,6 +54,12 @@ public:
 
 	EXPORT int32_t DeleteEvent(CSocket *pSocket);
 
+	CConnectTimerMgt &GetConnectTimerMgt();
+
+	CConnMgt &GetConnMgt();
+
+	void PushCloseEvent(CloseEvent *pCloseEvent);
+
 protected:
 	void PushPacket(NetPacket *pPacket);
 
@@ -57,7 +67,9 @@ protected:
 
 	int32_t MessagePump();
 
-	int32_t HandleTimeOutEvent();
+	int32_t HandleTimeoutEvent();
+
+	int32_t HandleAsyncCloseEvent();
 
 protected:
 	IReactor	*m_pReactor;
@@ -65,7 +77,11 @@ protected:
 	int64_t		m_nReconnectTime;
 	int64_t		m_nLastConnectTime;
 
-	CNetQueue	m_stSendQueue;
+	list<NetPacket *>	m_stSendQueue;
+	list<CloseEvent *>	m_stCloseQueue;
+	CConnectTimerMgt	m_stConnectTimerMgt;
+
+	CConnMgt			m_stConnMgt;
 };
 
 NETEVENT_NAMESPACE_END

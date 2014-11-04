@@ -101,6 +101,8 @@ public:
 	virtual int32_t Open();
 	//关闭套接字
 	virtual void Close(int32_t nCloseCode = 0);
+	//异步关闭
+	virtual void AsyncClose(int32_t nCloseCode = 0);
 	//与服务端建立连接
 	virtual int32_t Connect(const char* szRemoteIP, uint16_t nPort);
 	//接收数据

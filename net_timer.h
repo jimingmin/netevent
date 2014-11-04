@@ -9,10 +9,9 @@
 #define NET_TIMER_H_
 
 #include "net_namespace.h"
-#include "../common/common_object.h"
+//#include "../common/common_object.h"
 
 #include <list>
-
 using namespace std;
 
 NETEVENT_NAMESPACE_BEGIN
@@ -75,7 +74,7 @@ protected:
 	list<CConnectTimer *>		m_stConnectTimerList;
 };
 
-#define	g_ConnectTimerMgt					CSingleton<CConnectTimerMgt>::GetInstance()
+//#define	g_ConnectTimerMgt					CSingleton<CConnectTimerMgt>::GetInstance()
 
 NETEVENT_NAMESPACE_END
 

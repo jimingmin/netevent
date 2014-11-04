@@ -11,7 +11,7 @@
 #include "net_namespace.h"
 #include "net_typedef.h"
 #include "net_connection.h"
-#include "../common/common_singleton.h"
+//#include "../common/common_singleton.h"
 
 #include <map>
 using namespace std;
@@ -47,7 +47,7 @@ protected:
 	ParserConnMap				m_stParserConnMap;
 };
 
-#define g_ConnMgt			CSingleton<CConnMgt>::GetInstance()
+//#define g_ConnMgt			CSingleton<CConnMgt>::GetInstance()
 
 NETEVENT_NAMESPACE_END
 

@@ -35,7 +35,7 @@ int32_t CConnector::Connect(const char *szRemoteAddr, uint16_t nPort, uint32_t n
 		return E_REMOTEIP;
 	}
 
-	CConnection *pConn = g_ConnMgt.CreateConnection(m_pNetHandler, m_pPacketParserFactory, m_pIOHandler);
+	CConnection *pConn = m_pNetHandler->GetConnMgt().CreateConnection(m_pNetHandler, m_pPacketParserFactory, m_pIOHandler);
 	if(pConn == NULL)
 	{
 		return E_NULLPOINTER;
@@ -87,7 +87,7 @@ int32_t CConnector::Connect(const char *szRemoteAddr, uint16_t nPort, uint32_t n
 		addr.sin_addr.s_addr = inet_addr(szRemoteIP);
 		addr.sin_port = htons(nPort);
 
-		CConnectTimer *pConnTimer = g_ConnectTimerMgt.CreateConnectTimer(pConn,
+		CConnectTimer *pConnTimer = m_pNetHandler->GetConnectTimerMgt().CreateConnectTimer(pConn,
 				static_cast<ConnectTimerProc>(&CConnection::OnTimerEvent), nTimeout);
 		if(pConnTimer == NULL)
 		{

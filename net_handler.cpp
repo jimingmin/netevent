@@ -113,9 +113,24 @@ int32_t CNetHandler::DeleteEvent(CSocket *pSocket)
 	return m_pReactor->DeleteEvent(pSocket);
 }
 
+CConnectTimerMgt &CNetHandler::GetConnectTimerMgt()
+{
+	return m_stConnectTimerMgt;
+}
+
+CConnMgt &CNetHandler::GetConnMgt()
+{
+	return m_stConnMgt;
+}
+
 void CNetHandler::PushPacket(NetPacket *pPacket)
 {
-	m_stSendQueue.Push(pPacket);
+	m_stSendQueue.push_back(pPacket);
+}
+
+void CNetHandler::PushCloseEvent(CloseEvent *pCloseEvent)
+{
+	m_stCloseQueue.push_back(pCloseEvent);
 }
 
 int32_t CNetHandler::Run()
@@ -128,7 +143,9 @@ int32_t CNetHandler::Run()
 		bHasData = true;
 	}
 	//处理socket超时事件
-	HandleTimeOutEvent();
+	HandleTimeoutEvent();
+	//处理close事件
+	HandleAsyncCloseEvent();
 
 	return bHasData;
 }
@@ -137,9 +154,10 @@ int32_t CNetHandler::MessagePump()
 {
 	int32_t nWaitTimeout = enmWaitTimeout;
 
-	while(!m_stSendQueue.Empty())
+	while(!m_stSendQueue.empty())
 	{
-		NetPacket *pPacket = m_stSendQueue.Pop();
+		NetPacket *pPacket = m_stSendQueue.front();
+		m_stSendQueue.pop_front();
 		int32_t nMessageResult = SendPacket(pPacket);
 		if(nMessageResult == S_FALSE)
 		{
@@ -159,7 +177,7 @@ int32_t CNetHandler::MessagePump()
 
 int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 {
-	CConnection *pConnection = g_ConnMgt.GetConnection(pPacket->m_nSessionID);
+	CConnection *pConnection = m_stConnMgt.GetConnection(pPacket->m_nSessionID);
 	if(pConnection == NULL)
 	{
 		return S_FALSE;
@@ -169,7 +187,7 @@ int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 	if(pConnection->Send(pPacket->m_pNetPacket, pPacket->m_nNetPacketLen, nSendBytes) == S_OK)
 	{
 		//写到循环buf了
-		pConnection->WritedToLowerBuf(pPacket->m_pNetPacket, nSendBytes);
+		pConnection->WriteCompleted(pPacket->m_pNetPacket, nSendBytes);
 	}
 	else
 	{
@@ -179,13 +197,13 @@ int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 	return S_OK;
 }
 
-int32_t CNetHandler::HandleTimeOutEvent()
+int32_t CNetHandler::HandleTimeoutEvent()
 {
-	int32_t nTimerCount = g_ConnectTimerMgt.GetConnectTimerCount();
+	int32_t nTimerCount = m_stConnectTimerMgt.GetConnectTimerCount();
 
 	for(int32_t i = 0; i < nTimerCount; ++i)
 	{
-		CConnectTimer *pTimer = g_ConnectTimerMgt.GetFirstConnectTimer();
+		CConnectTimer *pTimer = m_stConnectTimerMgt.GetFirstConnectTimer();
 		if(pTimer->m_nEndTime > CTimeValue::CurrentTime().Milliseconds())
 		{
 			continue;
@@ -200,8 +218,23 @@ int32_t CNetHandler::HandleTimeOutEvent()
 	return S_OK;
 }
 
+int32_t CNetHandler::HandleAsyncCloseEvent()
+{
+	while(!m_stCloseQueue.empty())
+	{
+		CloseEvent *pCloseEvent = m_stCloseQueue.front();
+		m_stCloseQueue.pop_front();
+
+		CConnection *pConn = m_stConnMgt.GetConnection(pCloseEvent->m_nSessionID);
+		if(pConn != NULL)
+		{
+			pConn->Close(pCloseEvent->m_nCloseCode);
+		}
+
+		DELETE(pCloseEvent);
+	}
+	return S_OK;
+}
+
 NETEVENT_NAMESPACE_END
-
-
-
 

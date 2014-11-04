@@ -32,6 +32,7 @@ CConnection *CConnMgt::CreateConnection(CNetHandler *pNetHandler, IPacketParserF
 		pConn = m_stUnusedConnList.front();
 		m_stUnusedConnList.pop_front();
 
+		pConn->SetClosing(false);
 		pConn->SetNetHandler(pNetHandler);
 		pConn->SetPacketParser(pPacketParserFactory->Create());
 		pConn->SetIOHandler(pIOHandler);

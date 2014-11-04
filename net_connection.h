@@ -20,18 +20,25 @@ public:
 	CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser, IIOHandler *pIOHandler);
 
 	virtual int32_t GetSize();
+	//同步关闭
+	virtual void Close(int32_t nCloseCode = 0);
+	//异步关闭
+	virtual void AsyncClose(int32_t nCloseCode = 0);
+	//写入数据
+	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
+
+	//写入到底层buf
+	int32_t WriteCompleted(uint8_t *pBuf, int32_t nBufSize);
 	//设置解包器
 	void SetPacketParser(IPacketParser *pPacketParser);
 	IPacketParser *GetPacketParser();
 	//设置io处理器
 	void SetIOHandler(IIOHandler *pIOHandler);
 	IIOHandler *GetIOHandler();
+	//设置是否正在关闭标识
+	void SetClosing(bool bClosing);
+	bool GetClosing();
 
-	virtual void Close(int32_t nCloseCode = 0);
-	//写入数据
-	virtual int32_t Write(uint8_t *pBuf, int32_t nBufSize);
-	//写入到底层buf
-	int32_t WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize);
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode);
@@ -50,6 +57,7 @@ protected:
 	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
 	IPacketParser			*m_pPacketParser;
 	IIOHandler				*m_pIOHandler;
+	bool					m_bIsClosing;			//是否正在关闭
 };
 
 NETEVENT_NAMESPACE_END

@@ -20,6 +20,8 @@ CConnection::CConnection(CNetHandler *pNetHandler, IPacketParser *pPacketParser,
 	m_pNetHandler = pNetHandler;
 	m_pPacketParser = pPacketParser;
 	m_pIOHandler = pIOHandler;
+
+	m_bIsClosing = false;
 }
 
 int32_t CConnection::GetSize()
@@ -47,13 +49,24 @@ IIOHandler *CConnection::GetIOHandler()
 	return m_pIOHandler;
 }
 
+void CConnection::SetClosing(bool bClosing)
+{
+	m_bIsClosing = bClosing;
+}
+
+bool CConnection::GetClosing()
+{
+	return m_bIsClosing;
+}
+
 void CConnection::Close(int32_t nCloseCode)
 {
-	if(g_ConnMgt.UnregistConnection(this))
+	CConnMgt &stConnMgt = m_pNetHandler->GetConnMgt();
+	if(stConnMgt.UnregistConnection(this))
 	{
 		CSocket::Close(nCloseCode);
 
-		g_ConnMgt.DestroyConnection(this, m_pPacketParser);
+		stConnMgt.DestroyConnection(this, m_pPacketParser);
 
 		m_stRecvBuffer.Reset();
 
@@ -61,6 +74,23 @@ void CConnection::Close(int32_t nCloseCode)
 		m_pPacketParser = NULL;
 		m_pIOHandler = NULL;
 	}
+}
+
+//异步关闭
+void CConnection::AsyncClose(int32_t nCloseCode)
+{
+	if(m_bIsClosing)
+	{
+		return;
+	}
+
+	m_bIsClosing = true;
+
+	CloseEvent *pCloseEvent = NEW(CloseEvent);
+	pCloseEvent->m_nSessionID = m_nSessionID;
+	pCloseEvent->m_nCloseCode = nCloseCode;
+
+	m_pNetHandler->PushCloseEvent(pCloseEvent);
 }
 
 int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
@@ -78,7 +108,7 @@ int32_t CConnection::Write(uint8_t *pBuf, int32_t nBufSize)
 	return nBufSize;
 }
 
-int32_t CConnection::WritedToLowerBuf(uint8_t *pBuf, int32_t nBufSize)
+int32_t CConnection::WriteCompleted(uint8_t *pBuf, int32_t nBufSize)
 {
 	m_pIOHandler->OnSent(this, pBuf, nBufSize);
 
@@ -170,7 +200,7 @@ int32_t CConnection::OnError(int32_t nErrorCode)
 //连接成功回调(重载此函数，可以在这里做些连接信息初始化的工作)
 int32_t CConnection::OnConnected()
 {
-	g_ConnMgt.RegistConnection(this);
+	m_pNetHandler->GetConnMgt().RegistConnection(this);
 
 	m_pIOHandler->OnOpened(this);
 
