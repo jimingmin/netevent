@@ -234,6 +234,12 @@ CConnectTimer *CSocket::GetSessionTimer()
 
 int32_t CSocket::ReadEvent()
 {
+	if((m_nSessionStatus == enmSessionStatus_Closed) ||
+		(m_nSessionStatus == enmSessionStatus_Error))
+	{
+		return S_OK;
+	}
+
 	int32_t nRet = S_OK;
 
 	//是监听套接字的读事件
@@ -282,6 +288,12 @@ int32_t CSocket::ReadEvent()
 
 int32_t CSocket::WriteEvent()
 {
+	if((m_nSessionStatus == enmSessionStatus_Closed) ||
+		(m_nSessionStatus == enmSessionStatus_Error))
+	{
+		return S_OK;
+	}
+
 	int32_t nError = 0;
 	socklen_t nLen = sizeof(int32_t);
 
@@ -307,7 +319,6 @@ int32_t CSocket::WriteEvent()
 int32_t CSocket::ErrorEvent()
 {
 	if((m_nSessionStatus == enmSessionStatus_Closed) ||
-			(m_nSessionStatus == enmSessionStatus_Opened) ||
 			(m_nSessionStatus == enmSessionStatus_Error))
 	{
 		return S_OK;
@@ -383,7 +394,7 @@ int32_t CSocket::SendRestData()
 			{
 				nSendBytes = -1;
 				//break;
-				Close();
+				//Close();
 			}
 		}
 	}
