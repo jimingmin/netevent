@@ -318,6 +318,12 @@ int32_t CSocket::WriteEvent()
 
 int32_t CSocket::ErrorEvent()
 {
+	if(m_pConnectTimer != NULL)
+	{
+		m_pNetHandler->GetConnectTimerMgt().DestroyConnectTimer(m_pConnectTimer);
+		m_pConnectTimer = NULL;
+	}
+
 	if((m_nSessionStatus == enmSessionStatus_Closed) ||
 			(m_nSessionStatus == enmSessionStatus_Error))
 	{
