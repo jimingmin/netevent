@@ -88,6 +88,16 @@ int32_t CAcceptor::Bind(uint16_t nPort)
 	return Bind(NULL, nPort);
 }
 
+IPacketParserFactory *CAcceptor::GetPacketParserFactory()
+{
+	return m_pPacketParserFactory;
+}
+
+IIOHandler *CAcceptor::GetIOHandler()
+{
+	return m_pIOHandler;
+}
+
 //读事件回调
 int32_t CAcceptor::OnRead(int32_t nErrorCode)
 {
@@ -117,6 +127,7 @@ int32_t CAcceptor::OnAccept(SocketFD nAcceptFD, struct sockaddr_in stPeerAddress
 	pConnection->SetPeerAddress((uint32_t)stPeerAddress.sin_addr.s_addr);
 	pConnection->SetPeerPort(stPeerAddress.sin_port);
 	pConnection->SetCreateTime(time(NULL));
+	pConnection->SetSourceRole(false);
 
 	set_non_block(nAcceptFD);
 

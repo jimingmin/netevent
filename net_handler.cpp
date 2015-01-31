@@ -133,14 +133,15 @@ void CNetHandler::PushCloseEvent(CloseEvent *pCloseEvent)
 	m_stCloseQueue.push_back(pCloseEvent);
 }
 
+//0表示无数据处理 1表示有数据处理
 int32_t CNetHandler::Run()
 {
-	bool bHasData = false;
+	int32_t bHasData = 0;
 
 	//消息泵
 	if(MessagePump() > 0)
 	{
-		bHasData = true;
+		bHasData = 1;
 	}
 	//处理socket超时事件
 	HandleTimeoutEvent();

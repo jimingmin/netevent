@@ -10,6 +10,8 @@
 
 #include "net_namespace.h"
 #include "net_socket.h"
+#include "net_packetparserfactory.h"
+#include "net_messagehandler.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -21,6 +23,10 @@ public:
 	EXPORT int32_t Bind(const char *szLocalIP, uint16_t nPort);
 
 	EXPORT int32_t Bind(uint16_t nPort);
+
+	EXPORT IPacketParserFactory *GetPacketParserFactory();
+
+	EXPORT IIOHandler *GetIOHandler();
 
 protected:
 	//读事件回调

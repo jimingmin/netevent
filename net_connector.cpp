@@ -136,6 +136,16 @@ int32_t CConnector::Connect(const char *szRemoteAddr, uint16_t nPort, uint32_t n
 	return S_OK;
 }
 
+IPacketParserFactory *CConnector::GetPacketParserFactory()
+{
+	return m_pPacketParserFactory;
+}
+
+IIOHandler *CConnector::GetIOHandler()
+{
+	return m_pIOHandler;
+}
+
 CNetHandler *CConnector::GetNetHandler()
 {
 	return m_pNetHandler;

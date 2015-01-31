@@ -25,6 +25,10 @@ public:
 	EXPORT int32_t Connect(const char *szRemoteAddr, uint16_t nPort, uint32_t nTimeout = 3000);
 
 	EXPORT CNetHandler *GetNetHandler();
+
+	EXPORT IPacketParserFactory *GetPacketParserFactory();
+
+	EXPORT IIOHandler *GetIOHandler();
 protected:
 	//读事件回调
 	virtual int32_t OnRead(int32_t nErrorCode);

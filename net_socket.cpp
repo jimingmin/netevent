@@ -50,6 +50,7 @@ int32_t CSocket::Init()
 	m_nLastRecvTime = 0;
 	m_nTotalSendBytes = 0;
 	m_nLastSendTime = 0;
+	m_bSourceRole = true;
 	m_stSendBuffer.Reset();
 	m_pConnectTimer = NULL;
 	m_pNetHandler = NULL;
@@ -209,6 +210,17 @@ void CSocket::SetParamPtr(void *ptr)
 void *CSocket::GetParamPtr()
 {
 	return m_pParam;
+}
+
+//设置是否主动发起连接
+void CSocket::SetSourceRole(bool bIsSourceRole)
+{
+	m_bSourceRole = bIsSourceRole;
+}
+//是否主动发起连接
+bool CSocket::IsSourceRole()
+{
+	return m_bSourceRole;
 }
 
 void CSocket::SetCreateTime(time_t nCreateTime)

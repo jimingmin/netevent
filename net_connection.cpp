@@ -200,6 +200,7 @@ int32_t CConnection::OnError(int32_t nErrorCode)
 //连接成功回调(重载此函数，可以在这里做些连接信息初始化的工作)
 int32_t CConnection::OnConnected()
 {
+	SetSourceRole(true);
 	m_pNetHandler->GetConnMgt().RegistConnection(this);
 
 	m_pIOHandler->OnOpened(this);

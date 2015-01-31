@@ -89,6 +89,10 @@ public:
 	virtual void SetParamPtr(void *ptr);
 	//获取附加参数
 	virtual void *GetParamPtr();
+	//设置是否主动发起连接
+	virtual void SetSourceRole(bool bIsSourceRole);
+	//是否主动发起连接
+	virtual bool IsSourceRole();
 
 	virtual int32_t ReadEvent();
 
@@ -171,6 +175,7 @@ protected:
 	time_t			m_nLastSendTime;			//最近一次发给对端数据的时间
 	uint64_t		m_nTotalRecvBytes;			//收到的数据大小
 	uint64_t		m_nTotalSendBytes;			//发送的数据大小
+	bool			m_bSourceRole;				//是否主动发起连接
 //	CycleBuffer<enmRecvBufferSize>	m_stRecvBuffer;	//接收缓冲区
 	CycleBuffer<enmSendBufferSize>	m_stSendBuffer;	//发送缓存，在套接字异常或者系统发送缓冲满的情况下，数据将会被放进此缓存
 

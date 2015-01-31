@@ -78,5 +78,52 @@ enum
 	enmWaitTimeout						= 50,	//50(ms)
 };
 
+//包解析函数
+typedef int32_t (*callback_net_parser)(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t *pPacketSize);
+//接收连接回调函数
+typedef int32_t (*callback_net_accepted)(SessionID nSessionID, char *pPeerAddress, uint16_t nPeerPort);
+//连接成功回调函数
+typedef int32_t (*callback_net_connected)(SessionID nSessionID, char *pPeerAddress, uint16_t nPeerPort);
+//连接超时回调函数
+typedef int32_t (*callback_net_connect_timeout)(SessionID nSessionID, char *pPeerAddress, uint16_t nPeerPort);
+//读完成回调函数
+typedef int32_t (*callback_net_read)(SessionID nSessionID, uint8_t *pData, int32_t nBytes);
+//写完成回调函数
+typedef int32_t (*callback_net_writen)(SessionID nSessionID, uint8_t *pData, int32_t nBytes);
+//连接关闭回调函数
+typedef int32_t (*callback_net_closed)(SessionID nSessionID, char *pPeerAddress, uint16_t nPeerPort);
+//连接出错回调函数
+typedef int32_t (*callback_net_error)(SessionID nSessionID, int32_t nErrorID);
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+struct CallBackSet
+{
+//public:
+//	CallBackSet()
+//	{
+//		func_net_accepted = NULL;
+//		func_net_connected = NULL;
+//		func_net_read = NULL;
+//		func_net_writen = NULL;
+//		func_net_closed = NULL;
+//	}
+
+	callback_net_parser				func_net_parser;
+	callback_net_accepted			func_net_accepted;
+	callback_net_connected			func_net_connected;
+	callback_net_connect_timeout	func_net_connect_timeout;
+	callback_net_read				func_net_read;
+	callback_net_writen				func_net_writen;
+	callback_net_closed				func_net_closed;
+	callback_net_error				func_net_error;
+};
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* NET_TYPEDEF_H_ */

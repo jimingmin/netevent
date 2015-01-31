@@ -183,6 +183,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\net_capi.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\net_capi.h"
+			>
+		</File>
+		<File
 			RelativePath=".\net_connection.cpp"
 			>
 		</File>
@@ -243,11 +251,35 @@
 			>
 		</File>
 		<File
+			RelativePath=".\net_messagehandler.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\net_messagehandler.h"
+			>
+		</File>
+		<File
 			RelativePath=".\net_namespace.h"
 			>
 		</File>
 		<File
 			RelativePath=".\net_packet.h"
+			>
+		</File>
+		<File
+			RelativePath=".\net_packetparser.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\net_packetparser.h"
+			>
+		</File>
+		<File
+			RelativePath=".\net_packetparserfactory.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\net_packetparserfactory.h"
 			>
 		</File>
 		<File

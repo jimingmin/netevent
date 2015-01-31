@@ -66,6 +66,10 @@ public:
 	virtual void SetParamPtr(void *ptr) = 0;
 	//获取附加参数
 	virtual void *GetParamPtr() = 0;
+	//设置是否主动发起连接
+	virtual void SetSourceRole(bool bIsSourceRole) = 0;
+	//是否主动发起连接
+	virtual bool IsSourceRole() = 0;
 
 	virtual int32_t ReadEvent() = 0;
 
