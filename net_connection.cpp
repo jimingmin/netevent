@@ -59,6 +59,11 @@ bool CConnection::GetClosing()
 	return m_bIsClosing;
 }
 
+CNetHandler *CConnection::GetNetHandler()
+{
+	return m_pNetHandler;
+}
+
 void CConnection::Close(int32_t nCloseCode)
 {
 	CConnMgt &stConnMgt = m_pNetHandler->GetConnMgt();
@@ -137,7 +142,6 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 
 	if(nRecvBytes > 0)
 	{
-		//m_pPacketParser->InputData(arrBuf, nRecvBytes);
 		int32_t nOffset = 0;
 		//提取消息包
 		do

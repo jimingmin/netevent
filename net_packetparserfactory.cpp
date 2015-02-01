@@ -11,14 +11,16 @@
 
 NETEVENT_NAMESPACE_BEGIN
 
-CNetPacketParserFactory::CNetPacketParserFactory()
+CNetPacketParserFactory::CNetPacketParserFactory(callback_net_parser func_net_parser)
 {
-
+	m_pFuncNetParser = func_net_parser;
 }
 
 IPacketParser *CNetPacketParserFactory::Create()
 {
-	return NEW(CNetPacketParser);
+	CNetPacketParser *pNetPacketParser = NEW(CNetPacketParser);
+	pNetPacketParser->SetNetParser(m_pFuncNetParser);
+	return pNetPacketParser;
 }
 
 void CNetPacketParserFactory::Destory(IPacketParser *pParser)

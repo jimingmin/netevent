@@ -9,17 +9,21 @@
 #define NET_PACKETPARSERFACTORY_H_
 
 #include "net_impl.h"
+#include "net_typedef.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
 class CNetPacketParserFactory : public IPacketParserFactory
 {
 public:
-	CNetPacketParserFactory();
+	CNetPacketParserFactory(callback_net_parser func_net_parser);
 
 	virtual IPacketParser *Create();
 
 	virtual void Destory(IPacketParser *pParser);
+
+protected:
+	callback_net_parser			m_pFuncNetParser;
 };
 
 

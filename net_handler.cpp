@@ -36,6 +36,7 @@ CNetHandler::CNetHandler()
 	m_pReactor = NULL;
 	m_nReconnectTime = 10;
 	m_nLastConnectTime = 0;
+	m_pCallBackSet = NULL;
 }
 
 CNetHandler::~CNetHandler()
@@ -131,6 +132,16 @@ void CNetHandler::PushPacket(NetPacket *pPacket)
 void CNetHandler::PushCloseEvent(CloseEvent *pCloseEvent)
 {
 	m_stCloseQueue.push_back(pCloseEvent);
+}
+
+void CNetHandler::SetNetHandlerCallBack(NetFuncEntry *pCallBack)
+{
+	m_pCallBackSet = pCallBack;
+}
+
+NetFuncEntry *CNetHandler::GetNetHandlerCallBack()
+{
+	return m_pCallBackSet;
 }
 
 //0表示无数据处理 1表示有数据处理

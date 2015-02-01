@@ -8,21 +8,31 @@
 #include "net_impl.h"
 #include "net_messagehandler.h"
 #include "net_namespace.h"
-
-extern CallBackSet g_CallBackSet;
+#include "net_connection.h"
+#include "net_handler.h"
+#include "net_typedef.h"
 
 NETEVENT_NAMESPACE_BEGIN
 
 int32_t CNetMessageHandler::OnOpened(IIOSession *pIoSession)
 {
+	CConnection *pConn = dynamic_cast<CConnection *>(pIoSession);
+	if(pConn == NULL)
+	{
+		return 0;
+	}
+
+	CNetHandler *pNetHandler = pConn->GetNetHandler();
 	//主动发起连接
 	if(pIoSession->IsSourceRole())
 	{
-		g_CallBackSet.func_net_connected(pIoSession->GetSessionID(), pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
+		pNetHandler->GetNetHandlerCallBack()->func_net_connected(pIoSession->GetSessionID(),
+			pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
 	}
 	else
 	{
-		g_CallBackSet.func_net_accepted(pIoSession->GetSessionID(), pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
+		pNetHandler->GetNetHandlerCallBack()->func_net_accepted(pIoSession->GetSessionID(),
+			pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
 	}
 
 	return 0;
@@ -30,48 +40,67 @@ int32_t CNetMessageHandler::OnOpened(IIOSession *pIoSession)
 
 int32_t CNetMessageHandler::OnRecved(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize)
 {
-	if(g_CallBackSet.func_net_read != NULL)
+	CConnection *pConn = dynamic_cast<CConnection *>(pIoSession);
+	if(pConn == NULL)
 	{
-		return g_CallBackSet.func_net_read(pIoSession->GetSessionID(), pBuf, nBufSize);
+		return 0;
 	}
-	return 0;
+
+	CNetHandler *pNetHandler = pConn->GetNetHandler();
+	return pNetHandler->GetNetHandlerCallBack()->func_net_read(pIoSession->GetSessionID(),
+		pBuf, nBufSize);
 }
 
 int32_t CNetMessageHandler::OnSent(IIOSession *pIoSession, uint8_t *pBuf, uint32_t nBufSize)
 {
-	if(g_CallBackSet.func_net_writen != NULL)
+	CConnection *pConn = dynamic_cast<CConnection *>(pIoSession);
+	if(pConn == NULL)
 	{
-		return g_CallBackSet.func_net_writen(pIoSession->GetSessionID(), pBuf, nBufSize);
+		return 0;
 	}
-	return 0;
+
+	CNetHandler *pNetHandler = pConn->GetNetHandler();
+	return pNetHandler->GetNetHandlerCallBack()->func_net_writen(pIoSession->GetSessionID(),
+		pBuf, nBufSize);
 }
 
 int32_t CNetMessageHandler::OnClosed(IIOSession *pIoSession)
 {
-	if(g_CallBackSet.func_net_closed != NULL)
+	CConnection *pConn = dynamic_cast<CConnection *>(pIoSession);
+	if(pConn == NULL)
 	{
-		return g_CallBackSet.func_net_closed(pIoSession->GetSessionID(), pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
+		return 0;
 	}
-	return 0;
+
+	CNetHandler *pNetHandler = pConn->GetNetHandler();
+	return pNetHandler->GetNetHandlerCallBack()->func_net_closed(pIoSession->GetSessionID(),
+		pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
 }
 
 int32_t CNetMessageHandler::OnError(IIOSession *pIoSession)
 {
-	if(g_CallBackSet.func_net_error != NULL)
+	CConnection *pConn = dynamic_cast<CConnection *>(pIoSession);
+	if(pConn == NULL)
 	{
-		return g_CallBackSet.func_net_error(pIoSession->GetSessionID(), 0);
+		return 0;
 	}
-	return 0;
+
+	CNetHandler *pNetHandler = pConn->GetNetHandler();
+	return pNetHandler->GetNetHandlerCallBack()->func_net_error(pIoSession->GetSessionID(), 0);
 }
 
 int32_t CNetMessageHandler::OnTimeout(IIOSession *pIoSession)
 {
-	if(g_CallBackSet.func_net_connect_timeout != NULL)
+	CConnection *pConn = dynamic_cast<CConnection *>(pIoSession);
+	if(pConn == NULL)
 	{
-		return g_CallBackSet.func_net_connect_timeout(pIoSession->GetSessionID(), 
-			pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
+		return 0;
 	}
-	return 0;
+
+	CNetHandler *pNetHandler = pConn->GetNetHandler();
+	return pNetHandler->GetNetHandlerCallBack()->func_net_connect_timeout(pIoSession->GetSessionID(), 
+			pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
+
 }
 
 

@@ -38,6 +38,8 @@ public:
 	//设置是否正在关闭标识
 	void SetClosing(bool bClosing);
 	bool GetClosing();
+	//获取nethandler
+	CNetHandler *GetNetHandler();
 
 protected:
 	//读事件回调

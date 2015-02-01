@@ -78,6 +78,7 @@ enum
 	enmWaitTimeout						= 50,	//50(ms)
 };
 
+
 //包解析函数
 typedef int32_t (*callback_net_parser)(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t *pPacketSize);
 //接收连接回调函数
@@ -100,7 +101,7 @@ extern "C"
 {
 #endif
 
-struct CallBackSet
+struct NetFuncEntry
 {
 //public:
 //	CallBackSet()

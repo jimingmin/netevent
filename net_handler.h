@@ -5,8 +5,8 @@
  *      Author: jimm
  */
 
-#ifndef NET_THREAD_H_
-#define NET_THREAD_H_
+#ifndef NET_HANDLER_H_
+#define NET_HANDLER_H_
 
 #include "net_namespace.h"
 #include "net_typedef.h"
@@ -20,6 +20,8 @@
 
 #include <list>
 using namespace std;
+
+struct NetFuncEntry;
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -60,6 +62,10 @@ public:
 
 	void PushCloseEvent(CloseEvent *pCloseEvent);
 
+	void SetNetHandlerCallBack(NetFuncEntry *pCallBack);
+
+	NetFuncEntry *GetNetHandlerCallBack();
+
 protected:
 	void PushPacket(NetPacket *pPacket);
 
@@ -82,9 +88,10 @@ protected:
 	CConnectTimerMgt	m_stConnectTimerMgt;
 
 	CConnMgt			m_stConnMgt;
+	NetFuncEntry	*m_pCallBackSet;
 };
 
 NETEVENT_NAMESPACE_END
 
 
-#endif /* NET_THREAD_H_ */
+#endif /* NET_HANDLER_H_ */
