@@ -34,7 +34,7 @@ void uninit_context(CNetHandler *pNetHandler)
 
 void net_run(CNetHandler* pNetHandler)
 {
-	while(true)
+	//while(true)
 	{
 		int32_t nIdle = pNetHandler->Run();
 		if(nIdle == 0)
