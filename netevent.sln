@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "netevent", "netevent.vcproj", "{2E44AE74-26BA-4754-B264-17CD18282D2B}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "..\common\common.vcproj", "{21043A48-C2C0-481D-BC0E-DFAAB01D3E90}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "netevent_cwrapper", "..\netevent_cwrapper\netevent_cwrapper.vcproj", "{5B03E540-F84B-48F7-A272-FF1B9DB30836}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2E44AE74-26BA-4754-B264-17CD18282D2B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2E44AE74-26BA-4754-B264-17CD18282D2B}.Debug|Win32.Build.0 = Debug|Win32
+		{2E44AE74-26BA-4754-B264-17CD18282D2B}.Release|Win32.ActiveCfg = Release|Win32
+		{2E44AE74-26BA-4754-B264-17CD18282D2B}.Release|Win32.Build.0 = Release|Win32
+		{21043A48-C2C0-481D-BC0E-DFAAB01D3E90}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21043A48-C2C0-481D-BC0E-DFAAB01D3E90}.Debug|Win32.Build.0 = Debug|Win32
+		{21043A48-C2C0-481D-BC0E-DFAAB01D3E90}.Release|Win32.ActiveCfg = Release|Win32
+		{21043A48-C2C0-481D-BC0E-DFAAB01D3E90}.Release|Win32.Build.0 = Release|Win32
+		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Debug|Win32.Build.0 = Debug|Win32
+		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Release|Win32.ActiveCfg = Release|Win32
+		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
