@@ -52,7 +52,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 		}
 		addr.sin_port = htons(nPort);
 
-		ret = bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
+        ret = ::bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
 		if (0 != ret)
 		{
 			Close();

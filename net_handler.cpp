@@ -54,10 +54,10 @@ int32_t CNetHandler::CreateReactor(int32_t nReactorType/* = enmReactorType_Epoll
 	}
 	else
 	{
-#ifdef WIN32
-		m_pReactor = new(nothrow) CSelect();
+#ifdef __linux__
+        m_pReactor = new(nothrow) CEpoll();
 #else
-		m_pReactor = new(nothrow) CEpoll();
+		m_pReactor = new(nothrow) CSelect();
 #endif
 	}
 

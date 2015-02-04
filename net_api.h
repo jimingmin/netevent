@@ -31,7 +31,10 @@ char *inet_ntoa_f(uint32_t ip);
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+
+#ifdef __linux__
 #include <sys/epoll.h>
+#endif
 
 typedef int SOCKET;
 #define INVALID_SOCKET -1
