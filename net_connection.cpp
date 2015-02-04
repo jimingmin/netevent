@@ -124,7 +124,7 @@ int32_t CConnection::WriteCompleted(uint8_t *pBuf, int32_t nBufSize)
 int32_t CConnection::OnRead(int32_t nErrorCode)
 {
 	int32_t nBufSize = 0;
-	uint8_t arrBuf[enmMaxMessageSize];
+	uint8_t arrBuf[64 * 1024];
 
 	if(m_stRecvBuffer.Size() > 0)
 	{
