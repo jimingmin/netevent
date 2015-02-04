@@ -7,7 +7,7 @@ CNetHandler* init_context(callback_net_parser func_net_parser, callback_net_acce
 					callback_net_closed func_net_closed, callback_net_error func_net_error)
 {
 	CNetHandler *pNetHandler = new CNetHandler();
-	pNetHandler->CreateReactor();
+	pNetHandler->CreateReactor(enmReactorType_Select);
 
 	NetFuncEntry *pFuncEntry = new NetFuncEntry();
 	pFuncEntry->func_net_parser = func_net_parser;
