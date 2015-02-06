@@ -309,17 +309,16 @@ int32_t CSocket::WriteEvent()
 	int32_t nError = 0;
 	socklen_t nLen = sizeof(int32_t);
 
-	if(0 != getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, (char *)&nError, &nLen))
+	if(getsockopt(m_nSocketFD, SOL_SOCKET, SO_ERROR, (char *)&nError, &nLen) < 0)
 	{
-		nError = 0;
+		return E_UNKNOWN;
 	}
 
 	if(m_nSessionStatus == enmSessionStatus_Connecting)
 	{
-		int32_t nError = 0;
-//		socklen_t nLen = sizeof(int32_t);
-		//连接成功
-		if(0 == nError)
+		struct sockaddr_in sa;
+		socklen_t nLen = sizeof(sa);
+		if(!getpeername(m_nSocketFD, (struct sockaddr *)&sa, &nLen))
 		{
 			return Connected();
 		}
