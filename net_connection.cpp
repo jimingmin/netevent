@@ -146,9 +146,8 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 		//提取消息包
 		do
 		{
-			int32_t nPacketSize = 0;
 			uint8_t arrPacket[enmMaxMessageSize];
-			m_pPacketParser->Parser(&arrBuf[nOffset], nRecvBytes - nOffset, arrPacket, nPacketSize);
+			int32_t nPacketSize = m_pPacketParser->Parser(&arrBuf[nOffset], nRecvBytes - nOffset, arrPacket, sizeof(arrPacket));
 			if(nPacketSize <= 0)
 			{
 				m_stRecvBuffer.Write(&arrBuf[nOffset], nRecvBytes - nOffset);

@@ -25,7 +25,7 @@ public:
 
 	virtual int32_t GetSize();
 
-	virtual int32_t Parser(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t &nPacketSize);
+	virtual int32_t Parser(const uint8_t arrInputBuf[], const uint32_t nInputBufSize, uint8_t arrOutputBuf[], int32_t nOutputBufSize);
 
 	void SetNetParser(callback_net_parser func_net_parser);
 protected:

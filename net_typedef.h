@@ -80,7 +80,7 @@ enum
 
 
 //包解析函数
-typedef int32_t (*callback_net_parser)(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t *pPacketSize);
+typedef int32_t (*callback_net_parser)(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t nPacketSize);
 //接收连接回调函数
 typedef int32_t (*callback_net_accepted)(SessionID nSessionID, char *pPeerAddress, uint16_t nPeerPort);
 //连接成功回调函数

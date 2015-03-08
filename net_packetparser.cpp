@@ -24,9 +24,9 @@ int32_t CNetPacketParser::GetSize()
 	return 0;
 }
 
-int32_t CNetPacketParser::Parser(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t &nPacketSize)
+int32_t CNetPacketParser::Parser(const uint8_t arrInputBuf[], const uint32_t nInputBufSize, uint8_t arrOutputBuf[], int32_t nOutputBufSize)
 {
-	return m_pFuncNetParser(arrBuf, nBufSize, arrPacket, &nPacketSize);
+	return m_pFuncNetParser(arrInputBuf, nInputBufSize, arrOutputBuf, nOutputBufSize);
 }
 
 void CNetPacketParser::SetNetParser(callback_net_parser func_net_parser)

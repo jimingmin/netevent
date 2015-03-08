@@ -101,12 +101,12 @@ public:
 
 	/*
 	 * 返回值：成功解析出来的包的大小，若buf数据不够解析出一个包则返回0
-	 * arrBuf：待解析的buf
-	 * nBufSize：arrBuf的大小
-	 * arrPacket：成功解析出来的包所存放的buf
-	 * nPacketSize：成功解析出来的包的大小
+	 * arrInBuf：待解析的buf
+	 * nInBufSize：arrInBuf的大小
+	 * arrOutputBuf：成功解析出来的包所存放的buf
+	 * nOutputBufSize：成功解析出来的包的大小
 	 */
-	virtual int32_t Parser(const uint8_t arrBuf[], const uint32_t nBufSize, uint8_t arrPacket[], int32_t &nPacketSize) = 0;
+	virtual int32_t Parser(const uint8_t arrInputBuf[], const uint32_t nInputBufSize, uint8_t arrOutputBuf[], int32_t nOutputBufSize) = 0;
 };
 
 class IPacketParserFactory
