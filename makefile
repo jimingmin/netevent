@@ -7,7 +7,7 @@ INC = -I$(NETEVENT_INCLUDE_DIR)
 
 ifeq ($(mode),d)
 	LIB_DIR = $(DEBUG_LIB_DIR)
-	CPPFLAGS= -g -fPIC -Wall -DDEBUG $(INC) -Wno-invalid-offsetof
+	CPPFLAGS= -g -gdwarf-2 -fPIC -Wall -DDEBUG $(INC) -Wno-invalid-offsetof
 	LDFLAGS = -g -fPIC -L$(LIB_DIR)
 	DEBUG_TARGET = $(LIB_DIR)/libnetevent.a
 	TARGET	= $(DEBUG_TARGET)
