@@ -147,14 +147,15 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 		do
 		{
 			uint8_t arrPacket[enmMaxMessageSize];
-			int32_t nPacketSize = m_pPacketParser->Parser(&arrBuf[nOffset], nRecvBytes - nOffset, arrPacket, sizeof(arrPacket));
-			if(nPacketSize <= 0)
+			int32_t nPacketSize = sizeof(arrPacket);
+			int32_t nParserSize = m_pPacketParser->Parser(&arrBuf[nOffset], nRecvBytes - nOffset, arrPacket, nPacketSize);
+			if(nParserSize <= 0)
 			{
 				m_stRecvBuffer.Write(&arrBuf[nOffset], nRecvBytes - nOffset);
 				break;
 			}
 
-			nOffset += nPacketSize;
+			nOffset += nParserSize;
 
 			m_pIOHandler->OnRecved(this, arrPacket, nPacketSize);
 			if(m_nSessionStatus != enmSessionStatus_Connected)
