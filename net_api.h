@@ -18,8 +18,6 @@ extern "C"
 
 int32_t set_non_block(SocketFD fd);
 
-char *inet_ntoa_f(uint32_t ip);
-
 #ifdef __cplusplus
 }
 #endif

@@ -73,15 +73,6 @@ extern "C"
 		return 0;
 	}
 
-	char *inet_ntoa_f(uint32_t ip)
-	{
-		static char buf[16];
-		uint8_t *str = (uint8_t *)&ip;
-		sprintf(buf, "%d.%d.%d.%d", str[0] & 0xff, str[1] & 0xff, str[2] & 0xff, str[3] & 0xff);
-
-		return buf;
-	}
-
 #ifdef __cplusplus
 }
 #endif
