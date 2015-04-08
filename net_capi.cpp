@@ -129,3 +129,28 @@ int32_t net_close_completed(IIOSession *pIoSession, callback_net_closed func_net
 {
 	return func_net_closed(pIoSession->GetSessionID(), pIoSession->GetPeerAddressStr(), pIoSession->GetPeerPort());
 }
+
+int64_t get_last_recv_time(CNetHandler *pNetHandler, SessionID nSessionID)
+{
+	CConnMgt &conn_mgt = pNetHandler->GetConnMgt();
+	CConnection *conn = conn_mgt.GetConnection(nSessionID);
+	if(conn == NULL)
+	{
+		return 0;
+	}
+
+	return conn->GetLastRecvTime();
+}
+
+int64_t get_last_send_time(CNetHandler *pNetHandler, SessionID nSessionID)
+{
+	CConnMgt &conn_mgt = pNetHandler->GetConnMgt();
+	CConnection *conn = conn_mgt.GetConnection(nSessionID);
+	if(conn == NULL)
+	{
+		return 0;
+	}
+
+	return conn->GetLastSendTime();
+}
+

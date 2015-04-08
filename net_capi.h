@@ -49,6 +49,10 @@ EXPORT int32_t net_close(CNetHandler *pNetHandler, SessionID nSessionID);
 
 EXPORT int32_t net_close_completed(IIOSession *pIoSession, callback_net_closed func_net_closed);
 
+EXPORT int64_t get_last_recv_time(CNetHandler *pNetHandler, SessionID nSessionID);
+
+EXPORT int64_t get_last_send_time(CNetHandler *pNetHandler, SessionID nSessionID);
+
 }
 
 #endif
