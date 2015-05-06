@@ -67,14 +67,12 @@ CNetHandler *CConnection::GetNetHandler()
 void CConnection::Close(int32_t nCloseCode)
 {
 	CConnMgt &stConnMgt = m_pNetHandler->GetConnMgt();
-	if(stConnMgt.UnregistConnection(this))
+	stConnMgt.UnregistConnection(this);
+	//if(stConnMgt.UnregistConnection(this))
 	{
 		CSocket::Close(nCloseCode);
-
 		stConnMgt.DestroyConnection(this, m_pPacketParser);
-
 		m_stRecvBuffer.Reset();
-
 		m_pNetHandler = NULL;
 		m_pPacketParser = NULL;
 		m_pIOHandler = NULL;
