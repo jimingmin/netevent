@@ -588,7 +588,7 @@ int32_t CSocket::Recv(uint8_t *pBuffer, int32_t nSize, int32_t& nRecvBytes)
 		}
 	}
 
-	m_nLastRecvTime = time(NULL);
+	//m_nLastRecvTime = time(NULL);
 
 	//接收数据
 	bool isConnClose = false;
