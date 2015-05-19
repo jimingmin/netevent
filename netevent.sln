@@ -6,6 +6,13 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "..\common\common.vcproj", "{21043A48-C2C0-481D-BC0E-DFAAB01D3E90}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "netevent_cwrapper", "..\netevent_cwrapper\netevent_cwrapper.vcproj", "{5B03E540-F84B-48F7-A272-FF1B9DB30836}"
+	ProjectSection(ProjectDependencies) = postProject
+		{21043A48-C2C0-481D-BC0E-DFAAB01D3E90} = {21043A48-C2C0-481D-BC0E-DFAAB01D3E90}
+		{2E44AE74-26BA-4754-B264-17CD18282D2B} = {2E44AE74-26BA-4754-B264-17CD18282D2B}
+		{882F2983-8625-44C5-8362-2233D343BF26} = {882F2983-8625-44C5-8362-2233D343BF26}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "logger", "..\logger\logger.vcproj", "{882F2983-8625-44C5-8362-2233D343BF26}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,6 +32,10 @@ Global
 		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Debug|Win32.Build.0 = Debug|Win32
 		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Release|Win32.ActiveCfg = Release|Win32
 		{5B03E540-F84B-48F7-A272-FF1B9DB30836}.Release|Win32.Build.0 = Release|Win32
+		{882F2983-8625-44C5-8362-2233D343BF26}.Debug|Win32.ActiveCfg = Debug|Win32
+		{882F2983-8625-44C5-8362-2233D343BF26}.Debug|Win32.Build.0 = Debug|Win32
+		{882F2983-8625-44C5-8362-2233D343BF26}.Release|Win32.ActiveCfg = Release|Win32
+		{882F2983-8625-44C5-8362-2233D343BF26}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
