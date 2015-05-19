@@ -73,6 +73,17 @@ extern "C"
 		return 0;
 	}
 
+	int32_t set_reuse_addr(SocketFD fd)
+	{
+#ifdef WIN32
+#else
+		//设置套接字属性
+		int32_t op = 1;
+		return setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&op, sizeof(op));
+#endif
+		return 0;
+	}
+
 #ifdef __cplusplus
 }
 #endif

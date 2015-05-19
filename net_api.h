@@ -18,6 +18,8 @@ extern "C"
 
 int32_t set_non_block(SocketFD fd);
 
+int32_t set_reuse_addr(SocketFD fd);
+
 #ifdef __cplusplus
 }
 #endif
