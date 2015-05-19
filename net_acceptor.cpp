@@ -32,9 +32,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 	if((m_nSessionType == enmSessionType_Listen) || (nPort > 0))
 	{
 		//设置套接字属性
-		int32_t op = 1;
-		int32_t ret = setsockopt(m_nSocketFD, SOL_SOCKET, SO_REUSEADDR, (char *)&op, sizeof(op));
-		if (0 != ret)
+		if(set_reuse_addr(m_nSocketFD) != 0)
 		{
 			Close();
 			return E_SOCKETOPTION;
@@ -52,7 +50,7 @@ int32_t CAcceptor::Bind(const char *szLocalIP, uint16_t nPort)
 		}
 		addr.sin_port = htons(nPort);
 
-        ret = ::bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
+        int32_t ret = ::bind(m_nSocketFD, (struct sockaddr *)&addr, sizeof(addr));
 		if (0 != ret)
 		{
 			Close();
