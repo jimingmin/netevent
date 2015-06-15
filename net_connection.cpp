@@ -10,6 +10,9 @@
 #include "net_eventid.h"
 #include "net_connmgt.h"
 #include "../common/common_memmgt.h"
+#include "../logger/logger.h"
+
+using namespace LOGGER;
 
 NETEVENT_NAMESPACE_BEGIN
 
@@ -66,6 +69,8 @@ CNetHandler *CConnection::GetNetHandler()
 
 void CConnection::Close(int32_t nCloseCode)
 {
+	WRITE_DEBUG_LOG(MODULE_NAME, "close connection!{closecode=%d, sessionid=%u}\n", nCloseCode, m_nSessionID);
+
 	CConnMgt &stConnMgt = m_pNetHandler->GetConnMgt();
 	stConnMgt.UnregistConnection(this);
 	//if(stConnMgt.UnregistConnection(this))
@@ -165,6 +170,7 @@ int32_t CConnection::OnRead(int32_t nErrorCode)
 
 	if(nCloseCode != 0)
 	{
+		WRITE_DEBUG_LOG(MODULE_NAME, "something error in recv, so close it!{closecode=%u, sessionid=%u}\n", nCloseCode, m_nSessionID);
 		Close(nCloseCode);
 		return E_SOCKETERROR;
 	}
@@ -177,6 +183,8 @@ int32_t CConnection::OnWrite(int32_t nErrorCode)
 {
 	if(nErrorCode != 0)
 	{
+		WRITE_DEBUG_LOG(MODULE_NAME, "close connection!{closecode=%d, sessionid=%u}\n", nErrorCode, m_nSessionID);
+
 		Close(SYS_EVENT_CONN_ERROR);
 		return E_SOCKETERROR;
 	}
@@ -184,6 +192,8 @@ int32_t CConnection::OnWrite(int32_t nErrorCode)
 	int32_t nRet = SendRestData();
 	if(nRet < 0)
 	{
+		WRITE_DEBUG_LOG(MODULE_NAME, "close connection!{closecode=%d, sessionid=%u}\n", nErrorCode, m_nSessionID);
+
 		Close(SYS_EVENT_CONN_ERROR);
 		return E_SOCKETERROR;
 	}

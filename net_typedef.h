@@ -22,6 +22,7 @@
 
 #include "../common/common_typedef.h"
 
+#define MODULE_NAME	"NETEVENT"
 
 #ifdef WIN32
 typedef SOCKET		SocketFD;
