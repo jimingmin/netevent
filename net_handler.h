@@ -88,7 +88,7 @@ protected:
 	CConnectTimerMgt	m_stConnectTimerMgt;
 
 	CConnMgt			m_stConnMgt;
-	NetFuncEntry	*m_pCallBackSet;
+	NetFuncEntry		*m_pCallBackSet;
 };
 
 NETEVENT_NAMESPACE_END

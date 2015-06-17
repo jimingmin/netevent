@@ -16,8 +16,7 @@
 #include "net_api.h"
 #include "../common/common_datetime.h"
 #include "../common/common_memmgt.h"
-#include "../logger/logger.h"
-using namespace LOGGER;
+#include "net_logger.h"
 
 #ifndef WIN32
 #include<cstring>
@@ -206,7 +205,7 @@ int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 	}
 	else
 	{
-		WRITE_DEBUG_LOG(MODULE_NAME, "send packet error, close connection!{errorcode=%u, sessionid=%u}\n", nRet, pConnection->GetSessionID());
+		WRITE_DEBUG_LOG(g_pLoggerConfig, "send packet error, close connection!{errorcode=%u, sessionid=%u}\n", nRet, pConnection->GetSessionID());
 		pConnection->Close();
 	}
 
@@ -244,7 +243,7 @@ int32_t CNetHandler::HandleAsyncCloseEvent()
 		CConnection *pConn = m_stConnMgt.GetConnection(pCloseEvent->m_nSessionID);
 		if(pConn != NULL)
 		{
-			WRITE_DEBUG_LOG(MODULE_NAME, "async close!{sessionid=%u}\n", pCloseEvent->m_nSessionID);
+			WRITE_DEBUG_LOG(g_pLoggerConfig, "async close!{sessionid=%u}\n", pCloseEvent->m_nSessionID);
 			pConn->Close(pCloseEvent->m_nCloseCode);
 		}
 
