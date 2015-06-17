@@ -10,8 +10,7 @@
 #include "net_eventid.h"
 #include "net_handler.h"
 #include "net_reactor.h"
-#include "../logger/logger.h"
-using namespace LOGGER;
+#include "net_logger.h"
 
 #include <time.h>
 
@@ -427,7 +426,7 @@ int32_t CSocket::Open()
 	//若socket连接已存在则先关闭套接字
 	if (enmInvalidSocketFD != m_nSocketFD)
 	{
-		WRITE_DEBUG_LOG(MODULE_NAME, "open socket, close exist socket!{sessionid=%u}\n", m_nSessionID);
+		WRITE_DEBUG_LOG(g_pLoggerConfig, "open socket, close exist socket!{sessionid=%u}\n", m_nSessionID);
 		Close(SYS_EVENT_CONN_CONFLICT);
 	}
 
@@ -533,7 +532,7 @@ int32_t CSocket::Connected()
 	int32_t nRet = getsockname(m_nSocketFD, (sockaddr *)&stLocalAddr, (socklen_t *)&nAddrLen);
 	if(nRet != 0)
 	{
-		WRITE_DEBUG_LOG(MODULE_NAME, "it's not conneced, so close it!{sessionid=%u}\n", m_nSessionID);
+		WRITE_DEBUG_LOG(g_pLoggerConfig, "it's not conneced, so close it!{sessionid=%u}\n", m_nSessionID);
 		Close(SYS_EVENT_CONN_CONFLICT);
 
 		return S_OK;
@@ -544,7 +543,7 @@ int32_t CSocket::Connected()
 				(strcmp(m_szClientAddress, inet_ntoa(stLocalAddr.sin_addr)) == 0)) &&
 				(stLocalAddr.sin_port == htons(m_nPeerPort)))
 	{
-		WRITE_DEBUG_LOG(MODULE_NAME, "it's self connected, so close it!{sessionid=%u}\n", m_nSessionID);
+		WRITE_DEBUG_LOG(g_pLoggerConfig, "it's self connected, so close it!{sessionid=%u}\n", m_nSessionID);
 		Close(SYS_EVENT_CONN_CONFLICT);
 
 		return S_OK;
