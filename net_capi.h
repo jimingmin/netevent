@@ -17,7 +17,8 @@ extern "C"
 EXPORT CNetHandler* init_context(callback_net_parser func_net_parser, callback_net_accepted func_net_accepted,
 				callback_net_connected func_net_connected, callback_net_connect_timeout func_net_connect_timeout,
 				callback_net_read func_net_read, callback_net_writen func_net_writen,
-				callback_net_closed func_net_closed, callback_net_error func_net_error);
+				callback_net_closed func_net_closed, callback_net_error func_net_error,
+				const char *log_dir, const char *log_name);
 
 EXPORT void uninit_context(CNetHandler *pNetHandler);
 

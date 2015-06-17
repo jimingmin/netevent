@@ -1,10 +1,12 @@
 #include "net_capi.h"
 #include "../common/common_api.h"
+#include "net_logger.h"
 
 CNetHandler* init_context(callback_net_parser func_net_parser, callback_net_accepted func_net_accepted,
 					callback_net_connected func_net_connected, callback_net_connect_timeout func_net_connect_timeout,
 					callback_net_read func_net_read, callback_net_writen func_net_writen,
-					callback_net_closed func_net_closed, callback_net_error func_net_error)
+					callback_net_closed func_net_closed, callback_net_error func_net_error,
+					const char *log_dir, const char *log_name)
 {
 	CNetHandler *pNetHandler = new CNetHandler();
 	pNetHandler->CreateReactor(enmReactorType_Select);
@@ -20,6 +22,27 @@ CNetHandler* init_context(callback_net_parser func_net_parser, callback_net_acce
 	pFuncEntry->func_net_error = func_net_error;
 	pNetHandler->SetNetHandlerCallBack(pFuncEntry);
 
+	if((log_dir != NULL) && (log_name != NULL))
+	{
+		LoggerConfig *pLoggerConfig = new LoggerConfig();
+
+		pLoggerConfig->log_dir = (char *)malloc(strlen(log_dir) + 1);
+		strcpy(pLoggerConfig->log_dir, log_dir);
+		pLoggerConfig->log_dir[strlen(log_dir)] = '\0';
+
+		pLoggerConfig->log_name = (char *)malloc(strlen(log_name) + 1);
+		strcpy(pLoggerConfig->log_name, log_name);
+		pLoggerConfig->log_name[strlen(log_name)] = '\0';
+
+		g_pLoggerConfig = pLoggerConfig;
+
+		//pNetHandler->SetLoggerConfig(pLoggerConfig);
+	}
+	else
+	{
+		g_pLoggerConfig = NULL;
+	}
+
 	return pNetHandler;
 }
 
@@ -30,6 +53,15 @@ void uninit_context(CNetHandler *pNetHandler)
 	NetFuncEntry *pFuncEntry = pNetHandler->GetNetHandlerCallBack();
 	delete pFuncEntry;
 	delete pNetHandler;
+
+	if(g_pLoggerConfig != NULL)
+	{
+		free(g_pLoggerConfig->log_dir);
+		free(g_pLoggerConfig->log_name);
+		free(g_pLoggerConfig);
+
+		g_pLoggerConfig = NULL;
+	}
 }
 
 void net_run(CNetHandler* pNetHandler)
