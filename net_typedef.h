@@ -22,7 +22,7 @@
 
 #include "../common/common_typedef.h"
 
-#define MODULE_NAME	"NETEVENT"
+#define MODULE_NAME	"netevent"
 
 #ifdef WIN32
 typedef SOCKET		SocketFD;
@@ -123,6 +123,13 @@ struct NetFuncEntry
 	callback_net_closed				func_net_closed;
 	callback_net_error				func_net_error;
 };
+
+struct LoggerConfig
+{
+	char		*log_dir;
+	char		*log_name;
+};
+
 #ifdef __cplusplus
 }
 #endif
