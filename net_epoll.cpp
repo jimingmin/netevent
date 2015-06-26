@@ -160,6 +160,12 @@ int32_t CEpoll::HandleMessage(int32_t nWaitTimeout)
 			continue;
 		}
 
+		SessionStatus nSessionStatus = pSocket->GetSessionStatus();
+		if((nSessionStatus == enmSessionStatus_Closed) || (nSessionStatus == enmSessionStatus_Error))
+		{
+			continue;
+		}
+
 		if((m_pEpollEvent[i].events & EPOLLIN) != 0)
 		{
 			pSocket->ReadEvent();
