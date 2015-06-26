@@ -778,7 +778,10 @@ int32_t CSocket::nRead(uint8_t *pBuffer, const int32_t nLength,bool &isConnClose
 		}
 	}while(nReadBytes < nLength);
 
-	m_nTotalRecvBytes += nReadBytes;
+	if(nReadBytes > 0)
+	{
+		m_nTotalRecvBytes += nReadBytes;
+	}
 	m_nLastRecvTime = time(NULL);
 
 	return nReadBytes;
@@ -819,7 +822,10 @@ int32_t CSocket::nWrite(const uint8_t *pBuffer, const int32_t nLength)
 		}
 	}while(nWriteBytes < nLength);
 
-	m_nTotalSendBytes += nWriteBytes;
+	if(nWriteBytes > 0)
+	{
+		m_nTotalSendBytes += nWriteBytes;
+	}
 	m_nLastSendTime = time(NULL);
 
 	return nWriteBytes;
