@@ -193,6 +193,7 @@ int32_t CNetHandler::SendPacket(NetPacket *pPacket)
 	CConnection *pConnection = m_stConnMgt.GetConnection(pPacket->m_nSessionID);
 	if(pConnection == NULL)
 	{
+		WRITE_DEBUG_LOG(g_pLoggerConfig, "send packet error, it's not found session connection!{sessionid=%u}\n", pConnection->GetSessionID());
 		return S_FALSE;
 	}
 

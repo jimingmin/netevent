@@ -133,6 +133,7 @@ int32_t net_write(CNetHandler *pNetHandler, SessionID nSessionID, uint8_t arrBuf
 	CConnection *conn = conn_mgt.GetConnection(nSessionID);
 	if(conn == NULL)
 	{
+		WRITE_DEBUG_LOG(g_pLoggerConfig, "it's not found session connection!{sessionid=%u}\n", nSessionID);
 		return -1;
 	}
 
