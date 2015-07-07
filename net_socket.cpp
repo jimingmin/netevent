@@ -466,6 +466,12 @@ void CSocket::Close(int32_t nCloseCode)
 	}
 }
 
+int32_t CSocket::Shutdown()
+{
+	//shutdown(m_nSocketFD, 0);
+	return 0;
+}
+
 //异步关闭
 void CSocket::AsyncClose(int32_t nCloseCode)
 {

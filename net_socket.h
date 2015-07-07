@@ -105,6 +105,8 @@ public:
 	virtual int32_t Open();
 	//关闭套接字
 	virtual void Close(int32_t nCloseCode = 0);
+	//
+	virtual int32_t Shutdown();
 	//异步关闭
 	virtual void AsyncClose(int32_t nCloseCode = 0);
 	//与服务端建立连接
